@@ -14,6 +14,9 @@ services:
       # requisição (funciona por IP ou domínio). Defina no .env com a URL
       # pública — é obrigatório para links de portal/assinatura e Mercado Pago.
       AUTH_URL: ${AUTH_URL:-}
+      # Usadas só por `npm run db:seed` (cria o usuário admin inicial).
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
       MAIL_PROVIDER: ${MAIL_PROVIDER:-smtp}
       SMTP_HOST: ${SMTP_HOST:-mailpit}
       SMTP_PORT: ${SMTP_PORT:-1025}
