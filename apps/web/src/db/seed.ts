@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { db } from "./index";
 import { usuarios } from "./schema";
+import { importarModelosLocais } from "./seed-modelos";
 
 async function main() {
   const email = process.env.SEED_ADMIN_EMAIL ?? "admin@sparapan.com.br";
@@ -13,6 +14,9 @@ async function main() {
     .onConflictDoNothing({ target: usuarios.email });
 
   console.log(`Usuário admin pronto: ${email}`);
+
+  await importarModelosLocais();
+
   process.exit(0);
 }
 

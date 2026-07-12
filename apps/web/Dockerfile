@@ -27,6 +27,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/src/db ./src/db
+COPY --from=builder /app/src/lib/docx ./src/lib/docx
+COPY --from=builder /app/documentos ./documentos
 COPY --from=builder /app/package.json /app/package-lock.json ./
 # node_modules completo (não só drizzle-kit/.bin) — drizzle-kit depende de
 # esbuild e outros pacotes transitivos que "cherry-pick" deixava de fora,
