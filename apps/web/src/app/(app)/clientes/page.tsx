@@ -177,7 +177,7 @@ export default async function ClientesPage({
       </div>
       {link && (
         <span className="break-all rounded-lg bg-info-container px-3 py-1.5 text-body-sm text-on-info-container">
-          {`${process.env.AUTH_URL ?? "http://localhost:8080"}/c/${link}`}
+          {`${process.env.AUTH_URL || "http://localhost:8080"}/c/${link}`}
         </span>
       )}
 

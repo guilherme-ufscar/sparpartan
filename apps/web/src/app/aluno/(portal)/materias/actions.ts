@@ -38,7 +38,12 @@ export async function iniciarCheckout(materiaId: string) {
   const client = new MercadoPagoConfig({ accessToken });
   const preference = new Preference(client);
 
-  const baseUrl = process.env.AUTH_URL ?? "http://localhost:3000";
+  // O Mercado Pago precisa de uma URL pública alcançável para o webhook —
+  // um localhost aqui faria a notificação de pagamento nunca chegar.
+  const baseUrl = process.env.AUTH_URL;
+  if (!baseUrl) {
+    throw new Error("AUTH_URL não configurada — defina a URL pública no .env para usar o checkout.");
+  }
 
   const resultado = await preference.create({
     body: {

@@ -76,7 +76,7 @@ export default async function DocumentoDetalhesPage({
           <div className="space-y-2">
             <StatusBadge status={statusAssinatura(assinatura.status)} />
             <p className="break-all text-body-sm text-outline">
-              Link: {process.env.AUTH_URL ?? "http://localhost:8080"}/assinar/{assinatura.token}
+              Link: {process.env.AUTH_URL || "http://localhost:8080"}/assinar/{assinatura.token}
             </p>
           </div>
         )}

@@ -33,7 +33,7 @@ export async function solicitarAssinatura(documentoId: string) {
   });
 
   if (cliente.email) {
-    const baseUrl = process.env.AUTH_URL ?? "http://localhost:8080";
+    const baseUrl = process.env.AUTH_URL || "http://localhost:8080";
     try {
       await enviarEmail({
         to: cliente.email,

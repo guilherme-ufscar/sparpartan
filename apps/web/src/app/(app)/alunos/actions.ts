@@ -16,7 +16,7 @@ function gerarSenhaInicial() {
 }
 
 function montarEmailBoasVindas(nome: string, email: string, senha: string) {
-  const url = process.env.AUTH_URL ?? "http://localhost:8080";
+  const url = process.env.AUTH_URL || "http://localhost:8080";
   return {
     assunto: "Bem-vindo à Área de Estudos",
     html:

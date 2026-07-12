@@ -99,7 +99,7 @@ export default async function ProcessoDetalhesPage({
       <SectionCard title="Links de autoatendimento">
         {link && (
           <div className="mb-4 rounded-lg bg-info-container p-3 text-body-sm text-on-info-container">
-            Link gerado: <span className="break-all font-mono">{`${process.env.AUTH_URL ?? "http://localhost:8080"}/c/${link}`}</span>
+            Link gerado: <span className="break-all font-mono">{`${process.env.AUTH_URL || "http://localhost:8080"}/c/${link}`}</span>
           </div>
         )}
         <div className="flex flex-wrap gap-3">

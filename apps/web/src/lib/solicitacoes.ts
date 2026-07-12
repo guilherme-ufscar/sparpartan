@@ -35,7 +35,7 @@ const CONVITE: Record<TipoSolicitacao, { assunto: string; chamada: string }> = {
 };
 
 export function urlBase() {
-  return process.env.AUTH_URL ?? "http://localhost:8080";
+  return process.env.AUTH_URL || "http://localhost:8080";
 }
 
 export async function criarSolicitacao(input: {

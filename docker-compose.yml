@@ -10,7 +10,10 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-sparapan}:${POSTGRES_PASSWORD:-sparapan}@postgres:5432/${POSTGRES_DB:-sparapan}
       REDIS_URL: redis://redis:6379
       AUTH_SECRET: ${AUTH_SECRET}
-      AUTH_URL: ${AUTH_URL:-http://localhost:${APP_PORT:-8080}}
+      # Vazio por padrão: com trustHost, o Auth.js infere a URL da própria
+      # requisição (funciona por IP ou domínio). Defina no .env com a URL
+      # pública — é obrigatório para links de portal/assinatura e Mercado Pago.
+      AUTH_URL: ${AUTH_URL:-}
       MAIL_PROVIDER: ${MAIL_PROVIDER:-smtp}
       SMTP_HOST: ${SMTP_HOST:-mailpit}
       SMTP_PORT: ${SMTP_PORT:-1025}
