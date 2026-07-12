@@ -27,8 +27,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/src/db ./src/db
-COPY --from=builder /app/node_modules/drizzle-kit ./node_modules/drizzle-kit
-COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
+COPY --from=builder /app/package.json /app/package-lock.json ./
+# node_modules completo (não só drizzle-kit/.bin) — drizzle-kit depende de
+# esbuild e outros pacotes transitivos que "cherry-pick" deixava de fora,
+# quebrando `npm run db:migrate`/`db:seed` dentro do container em produção.
+COPY --from=deps /app/node_modules ./node_modules
 
 RUN mkdir -p /app/data/uploads && chown -R nextjs:nodejs /app/data
 
