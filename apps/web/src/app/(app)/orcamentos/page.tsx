@@ -1,0 +1,66 @@
+import { desc, eq } from "drizzle-orm";
+import { Receipt } from "lucide-react";
+import { db } from "@/db";
+import { orcamentos, clientes, servicos } from "@/db/schema";
+import { StatusBadge, LinkButton, EmptyState, DataTable, type Column } from "@/components/ui";
+import { statusOrcamento } from "@/lib/status";
+
+function formatMoney(v: string) {
+  return Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+type LinhaOrcamento = {
+  id: string;
+  numero: string;
+  valor: string;
+  status: string;
+  clienteNome: string;
+  servicoNome: string;
+};
+
+export default async function OrcamentosPage() {
+  const lista = await db
+    .select({
+      id: orcamentos.id,
+      numero: orcamentos.numero,
+      valor: orcamentos.valor,
+      status: orcamentos.status,
+      clienteNome: clientes.nome,
+      servicoNome: servicos.nome,
+    })
+    .from(orcamentos)
+    .innerJoin(clientes, eq(orcamentos.clienteId, clientes.id))
+    .innerJoin(servicos, eq(orcamentos.servicoId, servicos.id))
+    .orderBy(desc(orcamentos.criadoEm));
+
+  const columns: Column<LinhaOrcamento>[] = [
+    { header: "Número", cell: (o) => <span className="font-medium text-primary">{o.numero}</span> },
+    { header: "Cliente", cell: (o) => o.clienteNome },
+    { header: "Serviço", cell: (o) => o.servicoNome },
+    { header: "Valor", cell: (o) => formatMoney(o.valor) },
+    { header: "Status", cell: (o) => <StatusBadge status={statusOrcamento(o.status)} /> },
+  ];
+
+  return (
+    <div className="space-y-gutter">
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-headline-lg font-bold text-primary">Orçamentos</h1>
+        <LinkButton href="/orcamentos/novo">+ Novo Orçamento</LinkButton>
+      </div>
+
+      <DataTable
+        columns={columns}
+        rows={lista}
+        rowKey={(o) => o.id}
+        rowHref={(o) => `/orcamentos/${o.id}`}
+        empty={
+          <EmptyState
+            icon={Receipt}
+            title="Nenhum orçamento criado ainda"
+            action={{ label: "+ Novo Orçamento", href: "/orcamentos/novo" }}
+          />
+        }
+      />
+    </div>
+  );
+}

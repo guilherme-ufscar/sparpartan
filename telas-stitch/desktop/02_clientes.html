@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sparapan - Clientes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600&family=JetBrains+Mono:wght@600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Manrope:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f8f9ff;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eaf1ff",
+                        "inverse-surface": "#213145",
+                        "surface-dim": "#cbdbf5",
+                        "on-background": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-fixed": "#d6e3ff",
+                        "error": "#ba1a1a",
+                        "primary": "#001736",
+                        "tertiary-container": "#003134",
+                        "on-tertiary-container": "#00a3aa",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "primary-container": "#002b5b",
+                        "error-container": "#ffdad6",
+                        "outline": "#747780",
+                        "inverse-primary": "#a9c7ff",
+                        "tertiary-fixed": "#66f7ff",
+                        "surface-tint": "#405f91",
+                        "on-primary-fixed-variant": "#264778",
+                        "tertiary-fixed-dim": "#00dce5",
+                        "outline-variant": "#c4c6d0",
+                        "on-secondary-fixed": "#390c00",
+                        "on-secondary-container": "#5d1900",
+                        "on-primary-fixed": "#001b3d",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#ffb59d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-container": "#fe6a34",
+                        "background": "#f8f9ff",
+                        "secondary-fixed": "#ffdbd0",
+                        "on-tertiary-fixed-variant": "#004f53",
+                        "tertiary": "#001b1c",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "secondary": "#ab3500",
+                        "on-primary-container": "#7594ca",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-fixed": "#002021",
+                        "on-surface-variant": "#43474f",
+                        "surface-container": "#e5eeff",
+                        "on-secondary-fixed-variant": "#832600",
+                        "on-surface": "#0b1c30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "base": "8px",
+                        "stack-md": "12px",
+                        "gutter": "24px",
+                        "stack-lg": "24px",
+                        "margin-mobile": "16px",
+                        "stack-sm": "4px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "status-badge": ["Hanken Grotesk"],
+                        "headline-md": ["Manrope"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "status-badge": ["13px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 bottom-0 z-40 flex flex-col h-screen w-64 bg-surface dark:bg-on-background border-r border-outline-variant dark:border-outline sidebar-scroll">
+<div class="p-stack-lg flex items-center gap-base">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">directions_boat</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-black text-primary dark:text-primary-fixed leading-tight">Sparapan</h1>
+<p class="font-body-md text-body-md opacity-60">Maritime Management</p>
+</div>
+</div>
+<nav class="flex-1 px-base mt-stack-lg space-y-1">
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Agenda</span>
+</a>
+<!-- Active Tab: Clientes -->
+<a class="flex items-center gap-base p-stack-md transition-all text-primary dark:text-inverse-primary font-bold bg-surface-container-highest dark:bg-primary-container rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-body-md text-body-md">Clientes</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">directions_boat</span>
+<span class="font-body-md text-body-md">Embarcações</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">group_work</span>
+<span class="font-body-md text-body-md">Tripulação</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md text-body-md">Documentos</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-body-md text-body-md">Manutenções</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-md text-body-md">Finanças</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">workspace_premium</span>
+<span class="font-body-md text-body-md">Certificados</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md text-body-md">Estoque</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low dark:hover:bg-surface-container-high text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body-md text-body-md">Vistorias</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant p-base">
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-body-md text-body-md">Suporte</span>
+</a>
+<a class="flex items-center gap-base p-stack-md transition-all hover:bg-surface-container-low text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Ajuda</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Container -->
+<main class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+<!-- TopAppBar -->
+<header class="w-full h-16 flex items-center bg-surface-container-lowest dark:bg-surface-container-lowest border-b border-outline-variant dark:border-outline z-30">
+<div class="flex justify-between items-center px-margin-desktop w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-gutter flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-on-tertiary-container transition-all outline-none" placeholder="Pesquisar em toda a plataforma..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-stack-lg">
+<div class="flex gap-stack-sm">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors cursor-pointer active:scale-95 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant mx-stack-sm"></div>
+<div class="flex items-center gap-stack-md cursor-pointer group">
+<div class="text-right hidden md:block">
+<p class="text-body-md font-bold text-primary leading-tight">Cap. Marcos Sparapan</p>
+<p class="text-[12px] text-on-surface-variant">Administrador</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a maritime manager with a confident expression, wearing a navy blue blazer, set against a minimalist light grey studio background. The lighting is soft and even, creating a clean corporate aesthetic with a focus on trust and nautical authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtR2l_0yaH3KbIh20qUznGBZfammBYaXItJqidto0cG6BQQXPPulX97pONXcGaOYzY05TqKDLsBS8f1QT5CIkexAMV1FXAvdquGH5l-PNe9yYsmlf2WO-jzsgLxRvALOixcNTy0vl3ybw6WQpID_xUVRITQMusYwGbyagYIFKqpNcCC2DsnXPyzcCGIjtC8WmWMq0Dywat6ragvJWErzlAMW-NfWXm17ypWytc-H0Mg0eCPxaDB1TFnt5vrZHQ2DVbKTV_FqwSu-We"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<section class="flex-1 overflow-y-auto p-margin-desktop bg-background">
+<div class="max-w-container-max mx-auto space-y-stack-lg">
+<!-- Page Header & Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-gutter">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Clientes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">1.240 clientes cadastrados na base de dados</p>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-lg font-bold hover:opacity-90 transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined">add</span>
+                        Novo Cliente
+                    </button>
+</div>
+<!-- Filters Bar -->
+<div class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant flex flex-wrap gap-stack-md items-center shadow-sm">
+<div class="flex-1 min-w-[300px] relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-transparent border border-outline-variant rounded-lg text-body-md focus:border-tertiary-container focus:ring-0 transition-colors" placeholder="Filtrar por nome, CPF ou e-mail..." type="text"/>
+</div>
+<div class="flex gap-stack-md">
+<div class="relative min-w-[180px]">
+<select class="w-full pl-4 pr-10 py-2 bg-transparent border border-outline-variant rounded-lg text-body-md appearance-none focus:border-tertiary-container focus:ring-0">
+<option>Todos os Tipos</option>
+<option>Pessoa Física (PF)</option>
+<option>Pessoa Jurídica (PJ)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-body-md font-semibold hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+                            Mais Filtros
+                        </button>
+</div>
+</div>
+<!-- Table Content -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-gutter py-stack-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Nome</th>
+<th class="px-gutter py-stack-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Tipo</th>
+<th class="px-gutter py-stack-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Contato</th>
+<th class="px-gutter py-stack-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">CPF/CNPJ</th>
+<th class="px-gutter py-stack-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Cidade/UF</th>
+<th class="px-gutter py-stack-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-gutter py-4">
+<div class="flex items-center gap-stack-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="Close-up portrait of a senior man with salt-and-pepper hair and a friendly, distinguished look, wearing a white nautical polo shirt. Bright daylight lighting against a blurred harbor background, professional and clean UI photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC2rhGZTxUyHeQZMTL3xYTpLtkarYQj3cdy9Pue3T7sDIif2Jn6VDk9oj4j-3M4FxYZfyoXYCxTV-EaOEuOx_IYVryNzuwDJQ08GQiKQfU7ZUiyQBSQvExO-85dYLTk28TICD9HWm_NEQooUXfkrN3945H-Rn2drqa50G1vy_nG7UwpOrYugGpNBJxt27C68PYAZPqQcbmG5jccW8SpM8QbSiVlxcF_UgZSz8MXvMwJifje66XMCmB-ntDaAbHzYr0HYxwXtrMvhK_"/>
+<div>
+<p class="font-body-md font-bold text-primary">Adriano Cavalcanti</p>
+<p class="text-[12px] text-on-surface-variant">Cliente desde 2022</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-4">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-status-badge text-status-badge rounded-full">PF</span>
+</td>
+<td class="px-gutter py-4">
+<p class="font-body-md text-on-surface">(11) 98765-4321</p>
+<p class="text-[13px] text-on-surface-variant">adriano.c@email.com</p>
+</td>
+<td class="px-gutter py-4">
+<p class="font-label-caps text-label-caps font-medium text-on-surface">123.456.789-00</p>
+</td>
+<td class="px-gutter py-4">
+<p class="font-body-md text-on-surface">Santos / SP</p>
+</td>
+<td class="px-gutter py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all text-on-surface-variant" title="Ver Detalhes">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all text-on-surface-variant" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container hover:text-on-error-container rounded-lg transition-all text-on-surface-variant" title="Excluir">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-gutter py-4">
+<div class="flex items-center gap-stack-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary font-bold font-headline-md">
+                                                MB
+                                            </div>
+<div>
+<p class="font-body-md font-bold text-primary">Marina Blue Chartering</p>
+<p class="text-[12px] text-on-surface-variant">Frota: 4 Embarcações</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-4">
+<span class="px-3 py-1 bg-tertiary-container text-on-tertiary-container font-status-badge text-status-badge rounded-full">PJ</span>
+</td>
+<td class="px-gutter py-4">
+<p class="font-body-md text-on-surface">(13) 3321-0000</p>
+<p class="text-[13px] text-on-surface-variant">contato@marinablue.com</p>
+</td>
+<td class="px-gutter py-4">
+<p class="font-label-caps text-label-caps font-medium text-on-surface">12.345.678/0001-99</p>
+</td>
+<td class="px-gutter py-4">
+<p class="font-body-md text-on-surface">Guarujá / SP</p>
+</td>
+<td class="px-gutter py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container hover:text-on-error-container rounded-lg transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-gutter py-4">
+<div class="flex items-center gap-stack-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="Professional headshot of a middle-aged woman with blonde hair, wearing a navy blazer and white silk blouse. Clean, high-end corporate photography style with bright, neutral studio lighting and a subtle focus on organizational authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnuwU_XGOzO2Io_Ki2oMAmXluXmvNa6DGyVLTlTjZnbuXzOlGrIACnQntc-ZOhjfT5H2TtQJjTPIcs54tF_-DcVW_oIUs28-G7Tw-XxyfWLJxwCNrFaFCSY6AF-cSPC2d8oZ_zBRMCUOjG2OwncsDzJ0yQka65nZSYzMZZuJ7N0mHpw9ph0jm2WPe_Y70qDxJgkGNXaHFzICNLoWoiMi8mMxRIIULNrIw4fhj4wmTO9rHUTeLDC_aWqJplxybxpdw6CZY9DU5Cbru0"/>
+<div>
+<p class="font-body-md font-bold text-primary">Beatriz Soares</p>
+<p class="text-[12px] text-on-surface-variant">Pendente: Licenciamento</p>
+</div>
+</div>
+</td>
+<td class="px-gutter py-4">
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-status-badge text-status-badge rounded-full">PF</span>
+</td>
+<td class="px-gutter py-4">
+<p class="font-body-md text-on-surface">(21) 99988-7766</p>
+<p class="text-[13px] text-on-surface-variant">beatriz.soares@email.com</p>
+</td>
+<td class="px-gutter py-4">
+<p class="font-label-caps text-label-caps font-medium text-on-surface">321.654.987-11</p>
+</td>
+<td class="px-gutter py-4">
+<p class="font-body-md text-on-surface">Angra dos Reis / RJ</p>
+</td>
+<td class="px-gutter py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container hover:text-on-error-container rounded-lg transition-all text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Add more rows as needed for visual completeness -->
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-gutter py-stack-md bg-surface-container-low border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-stack-md">
+<p class="font-body-md text-body-md text-on-surface-variant">Mostrando <span class="font-bold">1-10</span> de <span class="font-bold">1.240</span></p>
+<div class="flex items-center gap-stack-sm">
+<button class="p-2 rounded-lg border border-outline-variant hover:bg-surface-container-highest transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex gap-1">
+<button class="w-10 h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container-highest text-on-surface rounded-lg transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container-highest text-on-surface rounded-lg transition-colors">3</button>
+<span class="px-2 self-end pb-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container-highest text-on-surface rounded-lg transition-colors">124</button>
+</div>
+<button class="p-2 rounded-lg border border-outline-variant hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Subtle Dashboard Contextual Information (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mt-gutter">
+<div class="bg-surface-container-lowest p-stack-lg rounded-xl border border-outline-variant">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">NOVOS ESTE MÊS</p>
+<div class="flex items-end gap-base">
+<h4 class="font-headline-md text-headline-md text-primary font-bold">+24</h4>
+<span class="text-on-tertiary-container font-bold text-status-badge bg-tertiary-container/10 px-2 py-0.5 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                12%
+                            </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-stack-lg rounded-xl border border-outline-variant">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">CONVERSÃO PJ</p>
+<div class="flex items-end gap-base">
+<h4 class="font-headline-md text-headline-md text-primary font-bold">18.5%</h4>
+<span class="text-on-surface-variant text-[12px]">Total: 230 empresas</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-stack-lg rounded-xl border border-outline-variant">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">RETERÇÃO DE CURSOS</p>
+<div class="flex items-end gap-base">
+<h4 class="font-headline-md text-headline-md text-primary font-bold">92%</h4>
+<div class="h-2 flex-1 bg-surface-container-highest rounded-full overflow-hidden mb-2">
+<div class="bg-secondary-container h-full w-[92%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mousedown', () => {
+                row.classList.add('scale-[0.995]');
+            });
+            row.addEventListener('mouseup', () => {
+                row.classList.remove('scale-[0.995]');
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary-container');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary-container');
+        });
+    </script>
+</body></html>

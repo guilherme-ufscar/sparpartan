@@ -1,0 +1,1 @@
+ALTER TABLE "processos" ADD COLUMN "protocolo_escaneado_caminho" text;

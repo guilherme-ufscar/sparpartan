@@ -1,0 +1,1 @@
+ALTER TABLE "clientes" ADD COLUMN "portal_senha_hash" text;

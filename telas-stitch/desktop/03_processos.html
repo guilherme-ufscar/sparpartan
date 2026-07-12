@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sparapan | Gestão de Processos</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#dce9ff",
+                    "inverse-primary": "#a9c7ff",
+                    "primary-fixed-dim": "#a9c7ff",
+                    "on-secondary-fixed": "#390c00",
+                    "tertiary-fixed": "#66f7ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#264778",
+                    "tertiary-container": "#003134",
+                    "secondary-container": "#fe6a34",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#d3e4fe",
+                    "secondary": "#ab3500",
+                    "tertiary": "#001b1c",
+                    "surface": "#f8f9ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-dim": "#cbdbf5",
+                    "on-secondary-fixed-variant": "#832600",
+                    "surface-variant": "#d3e4fe",
+                    "outline-variant": "#c4c6d0",
+                    "on-tertiary-fixed": "#002021",
+                    "on-primary-container": "#7594ca",
+                    "on-primary-fixed": "#001b3d",
+                    "secondary-fixed": "#ffdbd0",
+                    "outline": "#747780",
+                    "on-tertiary-container": "#00a3aa",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "on-tertiary-fixed-variant": "#004f53",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#00dce5",
+                    "primary": "#001736",
+                    "on-surface": "#0b1c30",
+                    "background": "#f8f9ff",
+                    "on-secondary-container": "#5d1900",
+                    "inverse-surface": "#213145",
+                    "surface-tint": "#405f91",
+                    "secondary-fixed-dim": "#ffb59d",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "primary-container": "#002b5b",
+                    "on-primary": "#ffffff",
+                    "on-background": "#0b1c30",
+                    "surface-bright": "#f8f9ff",
+                    "on-surface-variant": "#43474f",
+                    "primary-fixed": "#d6e3ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "stack-sm": "4px",
+                    "stack-md": "12px",
+                    "stack-lg": "24px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "label-caps": ["JetBrains Mono"],
+                    "body-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "status-badge": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "status-badge": ["13px", {"lineHeight": "16px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; background-color: #f8f9ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-header { backdrop-filter: blur(8px); background: rgba(248, 249, 255, 0.85); }
+        .table-row-hover:hover { background-color: #F1F5F9; }
+        .active-tab-indicator { position: absolute; right: 0; width: 2px; height: 100%; background: currentColor; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant flex flex-col py-base bg-surface z-50">
+<div class="px-6 py-4 flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">directions_boat</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-primary leading-tight">Sparapan</h1>
+<p class="text-label-caps font-label-caps text-on-surface-variant opacity-70">Nautical Management</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-3 space-y-1">
+<!-- Navigation Items Mapping -->
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">event</span>
+<span>Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">directions_boat</span>
+<span>Embarcações</span>
+</a>
+<!-- Active Tab: Processos (Using "history" as substitute for generic process/logs or adding dynamically) -->
+<!-- Since 'Processos' is requested as active but not in original JSON list, we use 'Documentos' as closest semantic map or add it -->
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-primary font-bold bg-surface-container border-r-2 border-primary rounded-lg group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
+<span>Processos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Tripulação</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">build</span>
+<span>Manutenções</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Finanças</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Estoque</span>
+</a>
+</nav>
+<div class="px-3 pt-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Perfil</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 font-body-md text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Sair</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar (Execution from JSON) -->
+<header class="h-16 fixed top-0 right-0 left-64 z-40 bg-surface-bright border-b border-outline-variant flex items-center justify-between px-margin-desktop">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-tertiary transition-all" placeholder="Filtrar por cliente, embarcação ou protocolo..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-all scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-all scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-all scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-label-caps font-bold text-primary">Cap. Sparapan</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Administrator</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="Professional headshot of a maritime administrator in a crisp navy uniform, soft sunlight highlighting facial features, minimalist nautical office background with blurred maps and instruments, high-end corporate photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWhon3ouASULT-6n25qfIqOxMkNOcm0iHXfhbIdGs7gDB1jvesTG-vE8MdYzV7Wz1tnnYYr_LrIl9PzSTBZn_Y98vtY7n7zQF6u76laKODsBYP4XskNIn9ABOk69WNBPL2h877L0xy00Wa4kSsLx38ARSidRVmmBVvxKsSoMlnA9Y_Sp89AkiWVsSqPTiEwKi4iz2uc9RdJkqvOFuUb-upGgKERo6Vi_Soz7A4Hur2i_PYWXD-Re9ZT1K6cgAHmKlDWZNCCTv4bpUx"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen">
+<div class="p-margin-desktop max-w-container-max mx-auto">
+<!-- Page Header & Global Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-lg mb-stack-lg">
+<div>
+<div class="flex items-center gap-2 text-outline mb-2">
+<span class="text-label-caps font-label-caps uppercase">Gestão Operacional</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-label-caps font-label-caps uppercase text-primary">Processos</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Gestão de Processos</h2>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="relative">
+<select class="appearance-none bg-white border border-outline-variant rounded-lg pl-4 pr-10 py-2.5 text-body-md focus:ring-2 focus:ring-tertiary focus:border-tertiary cursor-pointer transition-all">
+<option>Tipo de Serviço</option>
+<option>Renovação de Arrais</option>
+<option>Inscrição de Embarcação</option>
+<option>Transferência de Propriedade</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-white border border-outline-variant rounded-lg hover:bg-surface-container transition-colors text-body-md font-semibold text-on-surface-variant">
+<span class="material-symbols-outlined text-body-md">filter_list</span>
+                        Mais Filtros
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:opacity-90 transition-all shadow-sm font-semibold">
+<span class="material-symbols-outlined">add</span>
+                        Novo Processo
+                    </button>
+</div>
+</div>
+<!-- Dashboard Process Table Container -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline">Cliente</th>
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline">Embarcação</th>
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline">Serviço</th>
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline">Norma</th>
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline">Status</th>
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline">Data</th>
+<th class="px-6 py-4 text-label-caps font-label-caps text-outline text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Avatar portrait of a middle-aged man with short salt-and-pepper hair, wearing a casual polo shirt, neutral studio background, professional lighting, corporate user profile style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc5SWA91xutUB6qd6VckPXVJa3vOSClYH9oH9WhEqhNYQ5CaOwZA12WTtgitGOoXqvJbUv7LEvLdnnoJh2jLHlysmU2ktvCI1egFm3hb9XUXHDxsI0NLKay20dngVxsn6-sqwN1vSR844E5L7SVYXBrZAAa83jKCKsphEuYgEHRM9X6n2gI0IVSyBwg8nNMRi03lXa4ol3q3O3fLkj60zjw7HywpCeJq0nV7yMSzkpipxuCPPCgN_9yHltHQfqIW5i_JjcQHcqKvDC"/>
+<span class="font-body-md font-bold text-on-surface">Ricardo Almeida</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Sea Voyager III</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Renovação de Arrais</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-2 py-1 rounded text-label-caps font-label-caps text-primary border border-outline-variant/30">Normam 211</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-status-badge font-status-badge bg-blue-100 text-blue-800">Em análise</span>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">12 Out 2023</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 hover:bg-primary-container/20 rounded transition-colors text-primary" title="Gerar documentos">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</button>
+<button class="p-1.5 hover:bg-tertiary-container/10 rounded transition-colors text-on-tertiary-container" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 hover:bg-error-container/20 rounded transition-colors text-error" title="Excluir">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Close-up avatar of a woman with blond hair, professional lighting, cheerful expression, wearing business casual attire, soft pastel background, high-end UI profile image." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqwetIPs4J3ZTZhvj0lXKCNCOoXW4k63gPYRFrgjFciCBhsFaDsNWP6jWvJsAEX6n2zadqaUkVCgMGfLXVgPpqWi8Cueah-_r0UfdG-62q8r4olP4IC0dZUwsU87g1CyM_UGOu7EyF9Hx7FUa9dJYXvzTgFkZRvaW1vBP7L2G6F3fx4faCbp8bP_Xd6_n_8rJBtgBTzJPk0sESV28tuZHY_qBudso2_k8Y4HGSsGj8vaHRItn9B5iSTT8njTtSQ1rCPQEcQcTeMpun"/>
+<span class="font-body-md font-bold text-on-surface">Marina Santos</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Blue Sky Yacht</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Inscrição de Embarcação</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-2 py-1 rounded text-label-caps font-label-caps text-primary border border-outline-variant/30">Normam 211</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-status-badge font-status-badge bg-orange-100 text-orange-800">Aguardando documento</span>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">15 Out 2023</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 hover:bg-primary-container/20 rounded transition-colors text-primary"><span class="material-symbols-outlined text-[20px]">description</span></button>
+<button class="p-1.5 hover:bg-tertiary-container/10 rounded transition-colors text-on-tertiary-container"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-1.5 hover:bg-error-container/20 rounded transition-colors text-error"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white font-bold text-xs">FB</div>
+<span class="font-body-md font-bold text-on-surface">Fernando Braga</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Wind Chaser</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Transferência de Título</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-2 py-1 rounded text-label-caps font-label-caps text-primary border border-outline-variant/30">Normam 201</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-status-badge font-status-badge bg-purple-100 text-purple-800">Documento pronto</span>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">18 Out 2023</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 hover:bg-primary-container/20 rounded transition-colors text-primary"><span class="material-symbols-outlined text-[20px]">description</span></button>
+<button class="p-1.5 hover:bg-tertiary-container/10 rounded transition-colors text-on-tertiary-container"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-1.5 hover:bg-error-container/20 rounded transition-colors text-error"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Portrait of an elderly man with a white beard, nautical captain aesthetic, wearing a navy sweater, warm lighting, outdoor setting with a harbor in the background, sharp focus, professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_DtmZ_kuL1H_fQX-bsPYKc4e13RbntHJDehajN5RLIZuaal27I-2--xgv5PL__P6ogygvveE8bh1GONEoFCmq8AsbMDB0r-5Vn7IExyJZufF761zVQ9JSVOwlLbUUGOtpX3nq4uzt0HpOleIUhVj6Bs30iym8SPxDcStbOQ_J3SekmQ7Do3aKDfdIegeJQYhxpv7Co0QSmEUvmQAb7YFRFVBcVrsqFzcfgJnNMhF2DTc1laahjHLAKenjfiPaWbbB42YZHAmj0ovR"/>
+<span class="font-body-md font-bold text-on-surface">Antônio Costa</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Polaris X</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Vistoria Periódica</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-2 py-1 rounded text-label-caps font-label-caps text-primary border border-outline-variant/30">Normam 204</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-status-badge font-status-badge bg-cyan-100 text-cyan-800">Enviado</span>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">20 Out 2023</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 hover:bg-primary-container/20 rounded transition-colors text-primary"><span class="material-symbols-outlined text-[20px]">description</span></button>
+<button class="p-1.5 hover:bg-tertiary-container/10 rounded transition-colors text-on-tertiary-container"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-1.5 hover:bg-error-container/20 rounded transition-colors text-error"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="table-row-hover transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Professional headshot of a young woman with dark hair tied back, neutral gray background, wearing a smart casual blazer, clean and sharp focus, corporate directory style photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP2OFA-wQecQQJcQRnaoQxXfn_FBFo9FRbVtQ493NgGRBCOIGiZfMzwb5MUgr16y9x0S0tNF_admZ-Gjoj6seRns2y66vPcCKZciXmWri5s4-HxEiBnMb1i0ER4COncu2HBFFeCKFuaLtuHlW8V-WLTz0Yw5i-IiY5R7-bLPmGl_-orf-T8BB1_ZXChgj4CBIoO41imtUKhaGIBkqNAu6k7TxWUXKFXeQ0tLW0eVrZxf0nB9BC7pF-TPgsTv0Oz22kuKMBWVwcFsZz"/>
+<span class="font-body-md font-bold text-on-surface">Beatriz Lima</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Maré Alta</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">Arrais Amador</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container px-2 py-1 rounded text-label-caps font-label-caps text-primary border border-outline-variant/30">Normam 211</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-status-badge font-status-badge bg-green-100 text-green-800">Concluído</span>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">22 Out 2023</td>
+<td class="px-6 py-4 text-right space-x-2">
+<button class="p-1.5 hover:bg-primary-container/20 rounded transition-colors text-primary"><span class="material-symbols-outlined text-[20px]">description</span></button>
+<button class="p-1.5 hover:bg-tertiary-container/10 rounded transition-colors text-on-tertiary-container"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-1.5 hover:bg-error-container/20 rounded transition-colors text-error"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-outline-variant bg-surface-container-lowest">
+<p class="text-body-md text-on-surface-variant">Mostrando <span class="font-bold text-on-surface">1-5</span> de <span class="font-bold text-on-surface">1.234</span> processos</p>
+<div class="flex items-center gap-1">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-outline hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition-colors">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition-colors">124</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-outline hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual KPI Cards (Asymmetric Layout extra) -->
+<div class="mt-stack-lg grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-blue-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+<p class="text-label-caps font-label-caps text-outline mb-2">PROCESSOS ATIVOS</p>
+<div class="flex items-end justify-between">
+<h4 class="text-display-lg font-display-lg text-primary leading-none">42</h4>
+<div class="text-right">
+<span class="text-status-badge font-status-badge text-green-600 flex items-center gap-1 justify-end">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+                                +12%
+                            </span>
+<p class="text-[10px] text-outline uppercase tracking-tighter">vs mês passado</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-orange-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+<p class="text-label-caps font-label-caps text-outline mb-2">AGUARDANDO DOCS</p>
+<div class="flex items-end justify-between">
+<h4 class="text-display-lg font-display-lg text-secondary leading-none">15</h4>
+<div class="text-right">
+<span class="text-status-badge font-status-badge text-error flex items-center gap-1 justify-end">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+                                CRÍTICO
+                            </span>
+<p class="text-[10px] text-outline uppercase tracking-tighter">Ação imediata</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-cyan-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+<p class="text-label-caps font-label-caps text-outline mb-2">TEMPO MÉDIO</p>
+<div class="flex items-end justify-between">
+<h4 class="text-display-lg font-display-lg text-on-tertiary-container leading-none">8d</h4>
+<div class="text-right">
+<span class="text-status-badge font-status-badge text-on-tertiary-container flex items-center gap-1 justify-end">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                OTIMIZADO
+                            </span>
+<p class="text-[10px] text-outline uppercase tracking-tighter">Meta: &lt; 10 dias</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mini Script for micro-interactions -->
+<script>
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.opacity = '0.8';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.opacity = '1';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.opacity = '1';
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-tertiary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-tertiary/20');
+        });
+    </script>
+</body></html>

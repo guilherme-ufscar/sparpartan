@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sparapan - Gestão de Clientes</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#832600",
+                        "on-tertiary-fixed": "#002021",
+                        "background": "#f8f9ff",
+                        "tertiary-fixed-dim": "#00dce5",
+                        "surface-dim": "#cbdbf5",
+                        "on-tertiary-fixed-variant": "#004f53",
+                        "on-primary-container": "#7594ca",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#001736",
+                        "surface": "#f8f9ff",
+                        "tertiary-fixed": "#66f7ff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary": "#001b1c",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-container": "#00a3aa",
+                        "secondary-fixed-dim": "#ffb59d",
+                        "tertiary-container": "#003134",
+                        "surface-container-highest": "#d3e4fe",
+                        "secondary-container": "#fe6a34",
+                        "secondary-fixed": "#ffdbd0",
+                        "on-error-container": "#93000a",
+                        "on-background": "#0b1c30",
+                        "on-secondary-container": "#5d1900",
+                        "on-primary-fixed-variant": "#264778",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "inverse-primary": "#a9c7ff",
+                        "surface-tint": "#405f91",
+                        "outline": "#747780",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#43474f",
+                        "primary-container": "#002b5b",
+                        "error-container": "#ffdad6",
+                        "secondary": "#ab3500",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "surface-container-high": "#dce9ff",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "outline-variant": "#c4c6d0",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#390c00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "stack-sm": "4px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-lg": "24px",
+                        "stack-md": "12px",
+                        "container-max": "1440px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "status-badge": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "status-badge": ["13px", { "lineHeight": "16px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-filter {
+            background-color: #002b5b;
+            color: #ffffff;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center px-margin-mobile h-16 bg-surface border-b border-outline-variant shadow-sm">
+<div class="flex items-center w-full justify-between">
+<div class="flex items-center gap-4">
+<button class="p-2 text-primary hover:bg-surface-container-low transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Clientes</h1>
+</div>
+<button class="p-2 text-primary hover:bg-surface-container-low transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-24 px-margin-mobile min-h-screen">
+<!-- Filters Area -->
+<section class="mb-stack-lg overflow-x-auto whitespace-nowrap flex gap-2 py-2 no-scrollbar">
+<button class="active-filter px-4 py-1.5 rounded-full font-label-caps text-label-caps flex items-center gap-1 border border-primary transition-all">
+                Todos os tipos
+            </button>
+<button class="bg-surface-container-lowest text-on-surface-variant px-4 py-1.5 rounded-full font-label-caps text-label-caps border border-outline-variant hover:bg-surface-container-low transition-all">
+                Pessoa Física
+            </button>
+<button class="bg-surface-container-lowest text-on-surface-variant px-4 py-1.5 rounded-full font-label-caps text-label-caps border border-outline-variant hover:bg-surface-container-low transition-all">
+                Pessoa Jurídica
+            </button>
+</section>
+<!-- Clients List -->
+<div class="space-y-stack-md">
+<!-- Client Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a Brazilian man in his late 40s with a warm, confident expression. He is wearing a dark navy nautical polo shirt. The background is a soft-focus maritime setting with bright, clean light-mode aesthetics. High-end corporate photography style with natural skin tones and professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALMmYlnqhYdb6yHPXx5QU8PuVJm5SoJGuOZg4WmpkJ0rB4fiznBNRCnPRCIHOXxiDxvebbEl0YEK91Wk_lt8gPHqHTRX6w7mx0T34QsjVNoNjNThxg5NQqxkAVuAkoVnstjRqFris4uUav0hcZSfAnRIO9gO5tFcexFZ1gov911gZs0ORuC1qmy6Uf3DfI_2TLQfUu05TRTvrCCmZp0OiQOEWBXaGavtJdZcLK2NfbkaypzcoEV-aCvthq4ubihcWjQ8sSf_tNmP2B"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-headline-md text-body-lg text-primary truncate">Adriano Cavalcanti</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-primary-container font-status-badge text-status-badge">PF</span>
+</div>
+<div class="flex flex-col text-on-surface-variant gap-0.5">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="text-[14px]">Rio de Janeiro, RJ</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span class="text-[14px]">(21) 98822-4433</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Client Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-fixed text-3xl">directions_boat</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-headline-md text-body-lg text-primary truncate">Marina Blue Chartering</h2>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-tertiary-fixed-dim font-status-badge text-status-badge">PJ</span>
+</div>
+<div class="flex flex-col text-on-surface-variant gap-0.5">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="text-[14px]">Santos, SP</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span class="text-[14px]">(13) 3219-9000</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Client Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young professional woman in her 30s with a friendly smile, representing Beatriz Soares. She has an elegant, minimalist appearance. The lighting is soft and airy, fitting a high-end corporate application. The background has a clean, modern navy and white color palette consistent with a nautical dispatch brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCJXbZPH-RiBsFbCZuAnltdL3yQ2ZIX_IPNmnD7F6GkKkVtCzr9D2y5_WfZkkhawE9DBelOWw7wuapftDrkvi0UVsZK1xXyaK9a7AQhpLgn-Kb87UDnA7_ym-ULyqMBxHKggYndF6seTOBP3kfoH7ECQLQpEgnbpa2aapHS32fy9znPzRdJK1BvD-hMmKbojXNr-k_j6o1jP1YFjywnXQVCqNFB_MR-YXk20q72rl71poXvH7pDZAdGtQR5V5aDfUXO1_Wkj2K7kHi"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-headline-md text-body-lg text-primary truncate">Beatriz Soares</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-primary-container font-status-badge text-status-badge">PF</span>
+</div>
+<div class="flex flex-col text-on-surface-variant gap-0.5">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="text-[14px]">Florianópolis, SC</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span class="text-[14px]">(48) 99122-1100</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Client Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="Portrait of a distinguished older man in maritime attire, symbolizing an experienced vessel owner. Professional lighting highlights details of character and reliability. The color scheme is centered around deep navy and slate grey, maintaining a high-contrast corporate aesthetic for a naval management software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgKDk8mUFNbE7fO-2GrnqVfyq8Otmtf_5kKy6CpUlxs-UrptZxHzJ_QspQVa5VvRWYCfWP-s5ne_LCHCRBX0krq0P9ookim51cEgXuTsQoMvuk3coB6qnZBFh-QgiR34pvQ8vwD3Ws2N2QSwJK0vBdDlEhVihQn3Kma1IIBXJoUfyGH_ZzVMifEeMjvQ1SFBM8V2tj-Qk3yZNLNp34xRufWNQPnMm7rcqPdDW_AEU9Maia-CwKOABNQCXhwmezBBscMmWZSWPXqkdE"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-headline-md text-body-lg text-primary truncate">Carlos Henrique Mendes</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-variant text-primary-container font-status-badge text-status-badge">PF</span>
+</div>
+<div class="flex flex-col text-on-surface-variant gap-0.5">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="text-[14px]">Salvador, BA</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span class="text-[14px]">(71) 98777-6655</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Client Card 5 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-fixed text-3xl">anchor</span>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-headline-md text-body-lg text-primary truncate">Sparapan Logística Ltda</h2>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-tertiary-fixed-dim font-status-badge text-status-badge">PJ</span>
+</div>
+<div class="flex flex-col text-on-surface-variant gap-0.5">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="text-[14px]">Guarujá, SP</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span>
+<span class="text-[14px]">(13) 3455-8080</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</main>
+<!-- FAB -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-primary-container text-white rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-90 z-40">
+<span class="material-symbols-outlined text-3xl text-on-tertiary">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-caps text-label-caps mt-1">Agenda</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-label-caps text-label-caps mt-1">Clientes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-caps text-label-caps mt-1">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps mt-1">Menu</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for filter chips
+        const filters = document.querySelectorAll('section button');
+        filters.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filters.forEach(b => b.classList.remove('active-filter', 'bg-primary', 'text-white'));
+                filters.forEach(b => {
+                    if (!b.classList.contains('active-filter')) {
+                        b.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+                    }
+                });
+                btn.classList.add('active-filter');
+                btn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+            });
+        });
+
+        // Search feedback
+        document.querySelector('header button:last-child').addEventListener('click', () => {
+            console.log('Search triggered');
+        });
+    </script>
+</body></html>
