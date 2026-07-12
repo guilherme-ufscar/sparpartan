@@ -11,6 +11,7 @@ export const {
   signOut: signOutAluno,
   auth: authAluno,
 } = NextAuth({
+  trustHost: true,
   basePath: "/api/auth-aluno",
   session: { strategy: "jwt" },
   pages: { signIn: "/aluno/login" },
