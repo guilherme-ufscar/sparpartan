@@ -22,3 +22,4 @@ export { CalendarMonth } from "./calendar-month";
 export { SearchBox } from "./search-box";
 export { RichTextEditor } from "./rich-text-editor";
 export { SeletorIconeLms } from "./seletor-icone-lms";
+export { BackButton } from "./back-button";

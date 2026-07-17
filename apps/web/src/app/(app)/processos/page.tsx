@@ -1,4 +1,4 @@
-import { desc, eq, or, ilike, count } from "drizzle-orm";
+import { and, desc, eq, isNull, or, ilike, count } from "drizzle-orm";
 import { FolderClock } from "lucide-react";
 import { db } from "@/db";
 import { processos, clientes, servicos } from "@/db/schema";
@@ -30,8 +30,11 @@ export default async function ProcessosPage({
   const { q, page } = await searchParams;
 
   const filtro = q
-    ? or(ilike(clientes.nome, `%${q}%`), ilike(servicos.nome, `%${q}%`), ilike(processos.numeroProtocolo, `%${q}%`))
-    : undefined;
+    ? and(
+        isNull(processos.excluidoEm),
+        or(ilike(clientes.nome, `%${q}%`), ilike(servicos.nome, `%${q}%`), ilike(processos.numeroProtocolo, `%${q}%`))
+      )
+    : isNull(processos.excluidoEm);
 
   const [{ total }] = await db
     .select({ total: count() })

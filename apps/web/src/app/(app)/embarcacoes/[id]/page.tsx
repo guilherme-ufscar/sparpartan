@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { embarcacoes, motores, aquisicoes, salvatagemItens, clientes } from "@/db/schema";
 import { Campo, SectionCard } from "@/components/ui/form-field";
-import { StatusBadge, Button } from "@/components/ui";
+import { StatusBadge, Button, Badge, LinkButton, BackButton } from "@/components/ui";
 import { urgenciaVencimento, infoUrgencia } from "@/lib/status";
 import { adicionarItemSalvatagem } from "./actions";
 
@@ -44,14 +44,25 @@ export default async function EmbarcacaoDetalhesPage({
 
   return (
     <div className="space-y-gutter">
-      <div>
-        <h1 className="font-display text-headline-lg font-bold text-primary">{embarcacao.nome}</h1>
-        <p className="text-body-sm text-outline">
-          Proprietário:{" "}
-          <Link href={`/clientes/${proprietario.id}`} className="hover:underline">
-            {proprietario.nome}
-          </Link>
-        </p>
+      <BackButton href="/embarcacoes" />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="font-display text-headline-lg font-bold text-primary">{embarcacao.nome}</h1>
+            <Badge tone={embarcacao.classe === "comercial" ? "warning" : "info"} size="sm">
+              {embarcacao.classe === "comercial" ? "Comercial" : "Esporte e Recreio"}
+            </Badge>
+          </div>
+          <p className="text-body-sm text-outline">
+            Proprietário:{" "}
+            <Link href={`/clientes/${proprietario.id}`} className="hover:underline">
+              {proprietario.nome}
+            </Link>
+          </p>
+        </div>
+        <LinkButton href={`/embarcacoes/${id}/editar`} variant="outlined">
+          Editar
+        </LinkButton>
       </div>
 
       <SectionCard title="Dados Técnicos">

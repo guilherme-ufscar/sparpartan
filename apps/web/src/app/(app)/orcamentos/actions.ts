@@ -62,6 +62,8 @@ export async function criarOrcamento(
           embarcacaoId: String(formData.get("embarcacaoId") ?? "") || null,
           vendedorId,
           valor,
+          descricao: String(formData.get("descricao") ?? "") || null,
+          observacoes: String(formData.get("observacoes") ?? "") || null,
           validoAte: String(formData.get("validoAte") ?? "") || null,
         })
         .returning({ id: orcamentos.id });
@@ -76,6 +78,58 @@ export async function criarOrcamento(
   }
 
   redirect(`/orcamentos/${orcamentoId}`);
+}
+
+export async function atualizarOrcamento(
+  orcamentoId: string,
+  _estadoAnterior: EstadoForm,
+  formData: FormData
+): Promise<EstadoForm> {
+  const clienteId = String(formData.get("clienteId") ?? "");
+  const servicoId = String(formData.get("servicoId") ?? "");
+  const valor = String(formData.get("valor") ?? "");
+  const valores = valoresDoFormData(formData);
+
+  const erro = new Validador()
+    .exigir(!!clienteId, "Selecione o cliente.")
+    .exigir(!!servicoId, "Selecione o serviço.")
+    .exigir(!!valor && Number(valor) > 0, "Informe um valor válido.").erro;
+
+  if (erro) return { erro, valores };
+
+  const [orcamentoAtual] = await db
+    .select({ status: orcamentos.status })
+    .from(orcamentos)
+    .where(eq(orcamentos.id, orcamentoId))
+    .limit(1);
+  if (!orcamentoAtual) return { erro: "Orçamento não encontrado.", valores };
+  if (orcamentoAtual.status !== "pendente") {
+    return { erro: "Só é possível editar orçamentos com status pendente.", valores };
+  }
+
+  await db
+    .update(orcamentos)
+    .set({
+      clienteId,
+      servicoId,
+      embarcacaoId: String(formData.get("embarcacaoId") ?? "") || null,
+      valor,
+      descricao: String(formData.get("descricao") ?? "") || null,
+      observacoes: String(formData.get("observacoes") ?? "") || null,
+      validoAte: String(formData.get("validoAte") ?? "") || null,
+      pdfCaminho: null,
+    })
+    .where(eq(orcamentos.id, orcamentoId));
+
+  redirect(`/orcamentos/${orcamentoId}`);
+}
+
+export async function excluirOrcamento(orcamentoId: string) {
+  await db
+    .update(orcamentos)
+    .set({ excluidoEm: new Date() })
+    .where(eq(orcamentos.id, orcamentoId));
+  redirect("/orcamentos");
 }
 
 export async function gerarPdfOrcamento(orcamentoId: string) {

@@ -18,6 +18,9 @@ import {
   HardHat,
   BookOpen,
   UserCog,
+  Landmark,
+  BookMarked,
+  MessageSquare,
 } from "lucide-react";
 
 export type NavItem = {
@@ -30,7 +33,9 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Home", icon: LayoutDashboard },
   { href: "/agenda", label: "Agenda", icon: CalendarDays },
   { href: "/orcamentos", label: "Orçamentos", icon: Receipt },
+  { href: "/taxas", label: "Taxas a Pagar", icon: Landmark },
   { href: "/lembretes", label: "Lembretes", icon: AlarmClock },
+  { href: "/chat", label: "Chat da Equipe", icon: MessageSquare },
   { href: "/clientes", label: "Clientes", icon: Users },
   { href: "/embarcacoes", label: "Embarcações", icon: Ship },
   { href: "/obras", label: "Obras", icon: HardHat },
@@ -39,6 +44,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/documentos", label: "Documentos", icon: FileText },
   { href: "/servicos", label: "Serviços", icon: Wrench },
   { href: "/arquivos", label: "Arquivos", icon: Folder },
+  { href: "/documentos-sparapan", label: "Documentos Sparapan", icon: BookMarked },
   { href: "/vendas", label: "Vendas", icon: BarChart3 },
   { href: "/emails", label: "Enviar E-mails", icon: Mail },
   { href: "/area-de-estudos", label: "Área de Estudos", icon: GraduationCap },

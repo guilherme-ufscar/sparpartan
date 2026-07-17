@@ -28,6 +28,10 @@ export function NovaDespesaForm() {
               { value: "outra", label: "Outra" },
             ]}
           />
+          <label className="flex items-center gap-2 text-body-sm text-primary sm:col-span-4">
+            <input type="checkbox" name="recorrente" className="h-4 w-4" />
+            Despesa fixa mensal (recorrente)
+          </label>
           <div className="sm:col-span-4">
             <SubmitButton>Registrar Despesa</SubmitButton>
           </div>

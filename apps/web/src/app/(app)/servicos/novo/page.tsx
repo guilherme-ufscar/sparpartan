@@ -26,6 +26,8 @@ export default function NovoServicoPage() {
               options={[
                 { value: "despachante", label: "Despachante" },
                 { value: "escola", label: "Escola Náutica" },
+                { value: "engenharia", label: "Engenharia" },
+                { value: "ultrassom", label: "Ultrassom" },
               ]}
             />
             <Campo label="Norma" name="norma" defaultValue={v("norma")} />

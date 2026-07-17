@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { agendaEventos, clientes } from "@/db/schema";
+import { agendaEventos, agendaInteressados, clientes } from "@/db/schema";
 import { enviarEmail } from "@/lib/mail/adapter";
 import { Validador, valoresDoFormData, type EstadoForm } from "@/lib/validacao";
 
@@ -24,14 +24,30 @@ export async function criarEvento(
   const tipo = String(formData.get("tipo") ?? "compromisso") as "compromisso" | "prova" | "vencimento";
   const data = new Date(dataHora);
 
-  await db.insert(agendaEventos).values({
-    clienteId,
-    processoId: String(formData.get("processoId") ?? "") || null,
-    titulo,
-    dataHora: data,
-    tipo,
-    observacoes: String(formData.get("observacoes") ?? "") || null,
-  });
+  const [evento] = await db
+    .insert(agendaEventos)
+    .values({
+      clienteId,
+      processoId: String(formData.get("processoId") ?? "") || null,
+      titulo,
+      dataHora: data,
+      tipo,
+      local: String(formData.get("local") ?? "") || null,
+      representanteLegal: String(formData.get("representanteLegal") ?? "") || null,
+      observacoes: String(formData.get("observacoes") ?? "") || null,
+    })
+    .returning({ id: agendaEventos.id });
+
+  for (let i = 1; i <= 5; i++) {
+    const nomeInteressado = String(formData.get(`interessado${i}Nome`) ?? "").trim();
+    if (!nomeInteressado) continue;
+    await db.insert(agendaInteressados).values({
+      eventoId: evento.id,
+      nomeInteressado,
+      cpfInteressado: String(formData.get(`interessado${i}Cpf`) ?? "") || null,
+      servicoSolicitado: String(formData.get(`interessado${i}Servico`) ?? "") || null,
+    });
+  }
 
   if (tipo === "prova" && clienteId) {
     const [cliente] = await db.select().from(clientes).where(eq(clientes.id, clienteId)).limit(1);

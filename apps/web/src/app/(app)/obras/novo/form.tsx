@@ -1,13 +1,37 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Campo, CampoSelect, SectionCard } from "@/components/ui/form-field";
 import { SubmitButton, FormError } from "@/components/ui";
 import { criarObra } from "../actions";
+import type { EstadoForm } from "@/lib/validacao";
 
-export function NovaObraForm({ listaClientes }: { listaClientes: { id: string; nome: string }[] }) {
-  const [estado, formAction] = useActionState(criarObra, null);
-  const v = (nome: string) => estado?.valores?.[nome] ?? "";
+type Engenheiro = {
+  id: string;
+  nomeCompleto: string;
+  cpf: string | null;
+  crea: string | null;
+  tituloProfissional: string | null;
+};
+
+export function NovaObraForm({
+  listaClientes,
+  listaEngenheiros,
+  obraInicial,
+  action = criarObra,
+  submitLabel = "Salvar Obra",
+}: {
+  listaClientes: { id: string; nome: string }[];
+  listaEngenheiros: Engenheiro[];
+  obraInicial?: Record<string, unknown>;
+  action?: (estado: EstadoForm, formData: FormData) => Promise<EstadoForm>;
+  submitLabel?: string;
+}) {
+  const [estado, formAction] = useActionState(action, null);
+  const v = (nome: string): string | number =>
+    (estado?.valores?.[nome] as string | undefined) ??
+    ((obraInicial?.[nome] as string | number | null | undefined) ?? "");
 
   return (
     <form action={formAction} className="max-w-4xl space-y-6">
@@ -19,7 +43,7 @@ export function NovaObraForm({ listaClientes }: { listaClientes: { id: string; n
             label="Proprietário (Cliente)"
             name="clienteId"
             required
-            defaultValue={v("clienteId")}
+            defaultValue={String(v("clienteId"))}
             options={[
               { value: "", label: "Selecione..." },
               ...listaClientes.map((c) => ({ value: c.id, label: c.nome })),
@@ -31,8 +55,6 @@ export function NovaObraForm({ listaClientes }: { listaClientes: { id: string; n
           <Campo label="Código do Item da Obra" name="itemObraCodigo" defaultValue={v("itemObraCodigo")} />
           <Campo label="NORMAM de Uso" name="normamDeUso" defaultValue={v("normamDeUso")} />
           <Campo label="CP/DL/AG" name="cpDlAg" defaultValue={v("cpDlAg")} />
-          <Campo label="Responsável Técnico" name="respTecnico" defaultValue={v("respTecnico")} />
-          <Campo label="Nº CREA" name="nCrea" defaultValue={v("nCrea")} />
         </div>
         <label className="mt-4 flex flex-col gap-1">
           <span className="font-mono-caps text-[11px] uppercase tracking-wide text-outline">
@@ -82,7 +104,7 @@ export function NovaObraForm({ listaClientes }: { listaClientes: { id: string; n
           <CampoSelect
             label="Tem Banheiro?"
             name="banheiroSn"
-            defaultValue={v("banheiroSn")}
+            defaultValue={String(v("banheiroSn"))}
             options={[
               { value: "", label: "—" },
               { value: "sim", label: "Sim" },
@@ -126,7 +148,31 @@ export function NovaObraForm({ listaClientes }: { listaClientes: { id: string; n
         </div>
       </SectionCard>
 
-      <SubmitButton>Salvar Obra</SubmitButton>
+      <SectionCard title="Responsável Técnico">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <CampoSelect
+            label="Engenheiro Responsável"
+            name="engenheiroId"
+            defaultValue={String(v("engenheiroId"))}
+            options={[
+              { value: "", label: "Selecione..." },
+              ...listaEngenheiros.map((e) => ({
+                value: e.id,
+                label: `${e.nomeCompleto}${e.crea ? ` — CREA ${e.crea}` : ""}`,
+              })),
+            ]}
+          />
+        </div>
+        <p className="mt-3 text-body-sm text-outline">
+          Não encontrou o engenheiro?{" "}
+          <Link href="/obras/engenheiros" className="text-primary hover:underline" target="_blank">
+            Cadastrar novo engenheiro
+          </Link>
+          .
+        </p>
+      </SectionCard>
+
+      <SubmitButton>{submitLabel}</SubmitButton>
     </form>
   );
 }

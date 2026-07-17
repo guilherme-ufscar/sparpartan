@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { obras, clientes } from "@/db/schema";
+import { obras, clientes, engenheiros } from "@/db/schema";
 import { SectionCard } from "@/components/ui/form-field";
+import { BackButton, LinkButton } from "@/components/ui";
 
 function Campo({ label, valor }: { label: string; valor: string | number | null }) {
   return (
@@ -26,9 +27,14 @@ export default async function ObraDetalhesPage({
 
   const [cliente] = await db.select().from(clientes).where(eq(clientes.id, obra.clienteId)).limit(1);
 
+  const [engenheiro] = obra.engenheiroId
+    ? await db.select().from(engenheiros).where(eq(engenheiros.id, obra.engenheiroId)).limit(1)
+    : [];
+
   return (
     <div className="space-y-gutter">
-      <div className="flex items-center justify-between">
+      <BackButton href="/obras" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-headline-lg font-bold text-primary">
             {obra.titulo ?? "(sem título)"}
@@ -40,12 +46,17 @@ export default async function ObraDetalhesPage({
             </Link>
           </p>
         </div>
-        <Link
-          href={`/documentos/gerar?clienteId=${obra.clienteId}&obraId=${obra.id}`}
-          className="rounded-lg bg-primary px-4 py-2 font-display text-sm font-semibold text-on-primary hover:opacity-90"
-        >
-          Gerar Documento
-        </Link>
+        <div className="flex gap-2">
+          <LinkButton href={`/obras/${id}/editar`} variant="outlined">
+            Editar
+          </LinkButton>
+          <Link
+            href={`/documentos/gerar?clienteId=${obra.clienteId}&obraId=${obra.id}`}
+            className="rounded-lg bg-primary px-4 py-2 font-display text-sm font-semibold text-on-primary hover:opacity-90"
+          >
+            Gerar Documento
+          </Link>
+        </div>
       </div>
 
       <SectionCard title="Identificação">
@@ -55,9 +66,27 @@ export default async function ObraDetalhesPage({
           <Campo label="Código do Item" valor={obra.itemObraCodigo} />
           <Campo label="NORMAM de Uso" valor={obra.normamDeUso} />
           <Campo label="CP/DL/AG" valor={obra.cpDlAg} />
-          <Campo label="Responsável Técnico" valor={obra.respTecnico} />
-          <Campo label="CREA" valor={obra.nCrea} />
         </dl>
+      </SectionCard>
+
+      <SectionCard title="Responsável Técnico">
+        {engenheiro ? (
+          <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+            <Campo label="Nome Completo" valor={engenheiro.nomeCompleto} />
+            <Campo label="CPF" valor={engenheiro.cpf} />
+            <Campo label="CREA" valor={engenheiro.crea} />
+            <Campo label="Título Profissional" valor={engenheiro.tituloProfissional} />
+          </dl>
+        ) : (
+          <p className="text-sm text-outline">
+            Nenhum engenheiro responsável vinculado.{" "}
+            {(obra.respTecnico || obra.nCrea) && (
+              <>
+                (Legado: {obra.respTecnico ?? "—"} {obra.nCrea ? `— CREA ${obra.nCrea}` : ""})
+              </>
+            )}
+          </p>
+        )}
       </SectionCard>
 
       <SectionCard title="Localização">

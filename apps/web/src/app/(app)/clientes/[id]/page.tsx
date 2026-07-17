@@ -16,7 +16,7 @@ import {
   modelosDocumento,
 } from "@/db/schema";
 import { Campo, CampoSelect, SectionCard } from "@/components/ui/form-field";
-import { Badge, StatusBadge, Button, LinkButton, EmptyState } from "@/components/ui";
+import { Badge, StatusBadge, Button, LinkButton, EmptyState, BackButton } from "@/components/ui";
 import { urgenciaVencimento, infoUrgencia } from "@/lib/status";
 import {
   adicionarHabilitacao,
@@ -137,14 +137,20 @@ export default async function ClienteDetalhesPage({
 
   return (
     <div className="space-y-gutter">
-      <div className="flex items-center justify-between">
+      <BackButton href="/clientes" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-headline-lg font-bold text-primary">{cliente.nome}</h1>
           <p className="text-body-sm text-outline">{cliente.cpfCnpj}</p>
         </div>
-        <LinkButton href={`/api/etiqueta/${cliente.id}`} variant="outlined" icon={Download}>
-          Etiqueta de Envio
-        </LinkButton>
+        <div className="flex gap-2">
+          <LinkButton href={`/clientes/${cliente.id}/editar`} variant="outlined">
+            Editar
+          </LinkButton>
+          <LinkButton href={`/api/etiqueta/${cliente.id}`} variant="outlined" icon={Download}>
+            Etiqueta de Envio
+          </LinkButton>
+        </div>
       </div>
 
       <SectionCard title="Links de autoatendimento">
@@ -290,26 +296,44 @@ export default async function ClienteDetalhesPage({
       <SectionCard title="Arquivos">
         {arquivosDoCliente.length > 0 && (
           <ul className="mb-4 space-y-2 text-body-md">
-            {arquivosDoCliente.map((a) => (
-              <li key={a.id} className="flex items-center justify-between">
-                <span>
-                  <span className="font-mono-caps text-label-sm uppercase text-outline">
-                    {a.tipo}
-                  </span>{" "}
-                  — {a.nomeOriginal}
-                </span>
-                <a
-                  href={`/api/arquivos/${a.id}`}
-                  className="text-body-sm text-primary hover:underline"
-                >
-                  Baixar
-                </a>
-              </li>
-            ))}
+            {arquivosDoCliente.map((a) => {
+              const embarcacaoDoArquivo = embarcacoesDoCliente.find((e) => e.id === a.embarcacaoId);
+              return (
+                <li key={a.id} className="flex items-center justify-between">
+                  <span>
+                    <span className="font-mono-caps text-label-sm uppercase text-outline">
+                      {a.tipo}
+                    </span>{" "}
+                    — {a.nomeOriginal}
+                    {embarcacaoDoArquivo && (
+                      <span className="ml-2 text-body-sm text-outline">
+                        (embarcação: {embarcacaoDoArquivo.nome})
+                      </span>
+                    )}
+                  </span>
+                  <span className="flex gap-3">
+                    <a
+                      href={`/api/arquivos/${a.id}?inline=1`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-body-sm text-primary hover:underline"
+                    >
+                      Abrir
+                    </a>
+                    <a
+                      href={`/api/arquivos/${a.id}`}
+                      className="text-body-sm text-primary hover:underline"
+                    >
+                      Baixar
+                    </a>
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
 
-        <form action={enviarArquivoComId} className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+        <form action={enviarArquivoComId} className="grid grid-cols-1 gap-4 sm:grid-cols-5">
           <CampoSelect
             label="Tipo"
             name="tipo"
@@ -321,13 +345,22 @@ export default async function ClienteDetalhesPage({
               { value: "outro", label: "Outro" },
             ]}
           />
+          <CampoSelect
+            label="Embarcação (opcional)"
+            name="embarcacaoId"
+            options={[
+              { value: "", label: "Nenhuma (documento do cliente)" },
+              ...embarcacoesDoCliente.map((e) => ({ value: e.id, label: e.nome })),
+            ]}
+          />
           <label className="flex flex-col gap-1 sm:col-span-2">
             <span className="font-mono-caps text-label-sm uppercase tracking-wide text-outline">
-              Arquivo
+              Arquivo (foto ou PDF)
             </span>
             <input
               name="arquivo"
               type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.doc,.docx"
               required
               className="rounded-lg border border-outline-variant bg-surface px-3 py-2 text-body-md text-primary outline-none focus:border-primary"
             />

@@ -1,8 +1,9 @@
-import { desc, eq, or, ilike, count } from "drizzle-orm";
+import { and, desc, eq, isNull, or, ilike, count } from "drizzle-orm";
 import { Ship } from "lucide-react";
 import { db } from "@/db";
 import { embarcacoes, clientes } from "@/db/schema";
 import {
+  Badge,
   StatusBadge,
   LinkButton,
   EmptyState,
@@ -21,18 +22,30 @@ type LinhaEmbarcacao = {
   numeroInscricao: string | null;
   clienteNome: string;
   validadeDpem: string | null;
+  classe: "esporte_recreio" | "comercial";
 };
 
 export default async function EmbarcacoesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; page?: string; classe?: string }>;
 }) {
-  const { q, page } = await searchParams;
+  const { q, page, classe } = await searchParams;
 
-  const filtro = q
-    ? or(ilike(embarcacoes.nome, `%${q}%`), ilike(clientes.nome, `%${q}%`), ilike(embarcacoes.numeroInscricao, `%${q}%`))
-    : undefined;
+  const condicoes = [isNull(embarcacoes.excluidoEm)];
+  if (q) {
+    condicoes.push(
+      or(
+        ilike(embarcacoes.nome, `%${q}%`),
+        ilike(clientes.nome, `%${q}%`),
+        ilike(embarcacoes.numeroInscricao, `%${q}%`)
+      )!
+    );
+  }
+  if (classe === "esporte_recreio" || classe === "comercial") {
+    condicoes.push(eq(embarcacoes.classe, classe));
+  }
+  const filtro = and(...condicoes);
 
   const [{ total }] = await db
     .select({ total: count() })
@@ -50,6 +63,7 @@ export default async function EmbarcacoesPage({
       numeroInscricao: embarcacoes.numeroInscricao,
       clienteNome: clientes.nome,
       validadeDpem: embarcacoes.validadeDpem,
+      classe: embarcacoes.classe,
     })
     .from(embarcacoes)
     .innerJoin(clientes, eq(embarcacoes.clienteId, clientes.id))
@@ -62,6 +76,14 @@ export default async function EmbarcacoesPage({
     { header: "Nome", cell: (e) => <span className="font-medium text-primary">{e.nome}</span> },
     { header: "Proprietário", cell: (e) => e.clienteNome },
     { header: "Tipo", cell: (e) => e.tipo ?? "—" },
+    {
+      header: "Classe",
+      cell: (e) => (
+        <Badge tone={e.classe === "comercial" ? "warning" : "info"} size="sm">
+          {e.classe === "comercial" ? "Comercial" : "Esporte e Recreio"}
+        </Badge>
+      ),
+    },
     { header: "Inscrição", cell: (e) => e.numeroInscricao ?? "—" },
     {
       header: "DPEM",
@@ -76,9 +98,34 @@ export default async function EmbarcacoesPage({
 
   return (
     <div className="space-y-gutter">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-headline-lg font-bold text-primary">Embarcações</h1>
-        <LinkButton href="/embarcacoes/novo">+ Nova Embarcação</LinkButton>
+        <div className="flex gap-2">
+          <LinkButton href="/embarcacoes/novo?classe=esporte_recreio" variant="outlined">
+            + Esporte e Recreio
+          </LinkButton>
+          <LinkButton href="/embarcacoes/novo?classe=comercial">+ Comercial</LinkButton>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <LinkButton href="/embarcacoes" variant={!classe ? "filled" : "outlined"} size="sm">
+          Todas
+        </LinkButton>
+        <LinkButton
+          href="/embarcacoes?classe=esporte_recreio"
+          variant={classe === "esporte_recreio" ? "filled" : "outlined"}
+          size="sm"
+        >
+          Esporte e Recreio
+        </LinkButton>
+        <LinkButton
+          href="/embarcacoes?classe=comercial"
+          variant={classe === "comercial" ? "filled" : "outlined"}
+          size="sm"
+        >
+          Comercial
+        </LinkButton>
       </div>
 
       <SearchBox placeholder="Buscar por nome, proprietário ou inscrição..." valorAtual={q} />

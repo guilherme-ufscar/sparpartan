@@ -1,9 +1,17 @@
-import { desc, eq } from "drizzle-orm";
-import { Receipt } from "lucide-react";
+import { desc, eq, isNull } from "drizzle-orm";
+import { Receipt, Trash2 } from "lucide-react";
 import { db } from "@/db";
 import { orcamentos, clientes, servicos } from "@/db/schema";
-import { StatusBadge, LinkButton, EmptyState, DataTable, type Column } from "@/components/ui";
+import {
+  StatusBadge,
+  LinkButton,
+  ConfirmButton,
+  EmptyState,
+  DataTable,
+  type Column,
+} from "@/components/ui";
 import { statusOrcamento } from "@/lib/status";
+import { excluirOrcamento } from "./actions";
 
 function formatMoney(v: string) {
   return Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -31,6 +39,7 @@ export default async function OrcamentosPage() {
     .from(orcamentos)
     .innerJoin(clientes, eq(orcamentos.clienteId, clientes.id))
     .innerJoin(servicos, eq(orcamentos.servicoId, servicos.id))
+    .where(isNull(orcamentos.excluidoEm))
     .orderBy(desc(orcamentos.criadoEm));
 
   const columns: Column<LinhaOrcamento>[] = [
@@ -39,6 +48,31 @@ export default async function OrcamentosPage() {
     { header: "Serviço", cell: (o) => o.servicoNome },
     { header: "Valor", cell: (o) => formatMoney(o.valor) },
     { header: "Status", cell: (o) => <StatusBadge status={statusOrcamento(o.status)} /> },
+    {
+      header: "",
+      align: "right",
+      cell: (o) => {
+        const excluirComId = excluirOrcamento.bind(null, o.id);
+        return (
+          <div className="flex items-center justify-end gap-2">
+            {o.status === "pendente" && (
+              <LinkButton href={`/orcamentos/${o.id}/editar`} variant="text" size="sm">
+                Editar
+              </LinkButton>
+            )}
+            <form action={excluirComId}>
+              <ConfirmButton
+                mensagem={`Excluir orçamento ${o.numero}?`}
+                variant="text"
+                icon={<Trash2 size={12} />}
+              >
+                Excluir
+              </ConfirmButton>
+            </form>
+          </div>
+        );
+      },
+    },
   ];
 
   return (

@@ -16,16 +16,16 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col border-r border-outline-variant bg-surface lg:flex">
+    <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col bg-primary lg:flex">
       <div className="flex items-center gap-3 px-6 py-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-container">
-          <Image src="/logo.svg" alt="Sparapan" width={24} height={24} className="invert" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-on-primary">
+          <Image src="/logo.svg" alt="Sparapan" width={40} height={40} />
         </div>
         <div>
-          <p className="font-display text-base font-bold leading-tight text-primary">
+          <p className="font-display text-base font-bold leading-tight text-on-primary">
             Sparapan
           </p>
-          <p className="font-mono-caps text-[10px] uppercase tracking-wide text-outline">
+          <p className="font-mono-caps text-[10px] uppercase tracking-wide text-on-primary/70">
             Nautical Management
           </p>
         </div>
@@ -42,8 +42,8 @@ export function Sidebar({
               href={item.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                 active
-                  ? "border-r-2 border-primary bg-surface-container font-bold text-primary"
-                  : "text-on-surface-variant hover:bg-surface-container-low"
+                  ? "border-r-2 border-on-primary bg-on-primary/15 font-bold text-on-primary"
+                  : "text-on-primary/70 hover:bg-on-primary/10"
               }`}
             >
               <Icon size={18} strokeWidth={active ? 2.5 : 2} />
@@ -55,16 +55,16 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="border-t border-outline-variant p-4">
+      <div className="border-t border-on-primary/20 p-4">
         <div className="mb-3 flex items-center gap-3 rounded-lg px-2 py-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-pill bg-primary-container text-sm font-bold text-on-primary">
+          <div className="flex h-9 w-9 items-center justify-center rounded-pill bg-on-primary text-sm font-bold text-primary">
             {(userName ?? "?").charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-on-surface">
+            <p className="truncate text-sm font-semibold text-on-primary">
               {userName ?? "Usuário"}
             </p>
-            <p className="truncate text-xs capitalize text-on-surface-variant">
+            <p className="truncate text-xs capitalize text-on-primary/70">
               {userRole ?? ""}
             </p>
           </div>
@@ -72,7 +72,7 @@ export function Sidebar({
         <form action="/api/auth/signout" method="post">
           <button
             type="submit"
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-on-surface-variant hover:bg-surface-container-low"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-on-primary/80 hover:bg-on-primary/10"
           >
             <LogOut size={16} />
             Sair

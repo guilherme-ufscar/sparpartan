@@ -7,8 +7,10 @@ import { criarEmbarcacao } from "../actions";
 
 export function NovaEmbarcacaoForm({
   listaClientes,
+  classeInicial,
 }: {
   listaClientes: { id: string; nome: string }[];
+  classeInicial?: string;
 }) {
   const [estado, formAction] = useActionState(criarEmbarcacao, null);
   const v = (nome: string) => estado?.valores?.[nome] ?? "";
@@ -30,6 +32,15 @@ export function NovaEmbarcacaoForm({
             ]}
           />
           <Campo label="Nome" name="nome" required defaultValue={v("nome")} />
+          <CampoSelect
+            label="Classe"
+            name="classe"
+            defaultValue={v("classe") || classeInicial || "esporte_recreio"}
+            options={[
+              { value: "esporte_recreio", label: "Esporte e Recreio" },
+              { value: "comercial", label: "Comercial" },
+            ]}
+          />
           <Campo label="Nome Anterior" name="nomeAnterior" defaultValue={v("nomeAnterior")} />
           <Campo label="Número de Inscrição" name="numeroInscricao" defaultValue={v("numeroInscricao")} />
           <Campo label="Tipo" name="tipo" defaultValue={v("tipo")} />

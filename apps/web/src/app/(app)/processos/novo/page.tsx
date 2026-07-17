@@ -1,5 +1,6 @@
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { clientes, servicos } from "@/db/schema";
+import { clientes, servicos, usuarios } from "@/db/schema";
 import { NovoProcessoForm } from "./form";
 
 export default async function NovoProcessoPage() {
@@ -13,10 +14,16 @@ export default async function NovoProcessoPage() {
     .from(servicos)
     .orderBy(servicos.nome);
 
+  const listaUsuarios = await db
+    .select({ id: usuarios.id, nome: usuarios.nome })
+    .from(usuarios)
+    .where(eq(usuarios.ativo, true))
+    .orderBy(usuarios.nome);
+
   return (
     <div className="space-y-gutter">
       <h1 className="font-display text-headline-lg font-bold text-primary">Novo Atendimento</h1>
-      <NovoProcessoForm listaClientes={listaClientes} listaServicos={listaServicos} />
+      <NovoProcessoForm listaClientes={listaClientes} listaServicos={listaServicos} listaUsuarios={listaUsuarios} />
     </div>
   );
 }

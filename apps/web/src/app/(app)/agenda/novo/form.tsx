@@ -46,6 +46,8 @@ export function NovoEventoForm({
               ...listaProcessos.map((p) => ({ value: p.id, label: p.servicoNome })),
             ]}
           />
+          <Campo label="Local (ex: Capitania Fluvial)" name="local" defaultValue={v("local")} />
+          <Campo label="Representante Legal" name="representanteLegal" defaultValue={v("representanteLegal")} />
         </div>
         <label className="mt-4 flex flex-col gap-1">
           <span className="font-mono-caps text-[11px] uppercase tracking-wide text-outline">
@@ -58,6 +60,18 @@ export function NovoEventoForm({
             className="rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-primary outline-none focus:border-primary"
           />
         </label>
+      </SectionCard>
+
+      <SectionCard title="3. Interessados e Serviços (opcional, até 5)">
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Campo label={`Interessado ${i} — Nome`} name={`interessado${i}Nome`} />
+              <Campo label={`Interessado ${i} — CPF`} name={`interessado${i}Cpf`} />
+              <Campo label={`Interessado ${i} — Serviço Solicitado`} name={`interessado${i}Servico`} />
+            </div>
+          ))}
+        </div>
       </SectionCard>
 
       <SubmitButton>Criar Evento</SubmitButton>

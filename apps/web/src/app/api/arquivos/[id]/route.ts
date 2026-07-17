@@ -5,8 +5,9 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { arquivos } from "@/db/schema";
+import { mimeTypePorExtensao } from "@/lib/upload";
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
@@ -21,11 +22,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const uploadsDir = process.env.UPLOADS_DIR ?? "./data/uploads";
   const caminhoCompleto = path.join(uploadsDir, arquivo.caminho);
 
+  const inline = new URL(req.url).searchParams.get("inline") === "1";
+  const mimeType = mimeTypePorExtensao(arquivo.nomeOriginal);
+
   const bytes = await readFile(caminhoCompleto);
   return new NextResponse(new Uint8Array(bytes), {
     headers: {
-      "Content-Disposition": `attachment; filename="${arquivo.nomeOriginal}"`,
-      "Content-Type": "application/octet-stream",
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${arquivo.nomeOriginal}"`,
+      "Content-Type": inline ? mimeType : "application/octet-stream",
     },
   });
 }

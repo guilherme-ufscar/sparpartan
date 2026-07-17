@@ -1,9 +1,9 @@
-import { asc, eq, gte, and } from "drizzle-orm";
-import { ChevronLeft, ChevronRight, CalendarClock } from "lucide-react";
+import { asc, eq, gte, and, isNotNull } from "drizzle-orm";
+import { ChevronLeft, ChevronRight, CalendarClock, Landmark } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/db";
-import { agendaEventos, clientes, processos, servicos } from "@/db/schema";
-import { CampoSelect } from "@/components/ui/form-field";
+import { agendaEventos, agendaInteressados, clientes, processos, servicos } from "@/db/schema";
+import { CampoSelect, SectionCard } from "@/components/ui/form-field";
 import { Badge, LinkButton, Button, EmptyState, CalendarMonth } from "@/components/ui";
 import { statusEvento, tipoEvento, fonteCalendario, type FonteCalendarioTipo } from "@/lib/status";
 import { gradeDoMes, buscarItensCalendario, FONTES_PADRAO, TODAS_FONTES } from "@/lib/calendario";
@@ -97,7 +97,77 @@ export default async function AgendaPage({
       </div>
 
       <CalendarMonth celulas={celulas} itens={itens} />
+
+      <ListaLevarMarinha />
     </div>
+  );
+}
+
+async function ListaLevarMarinha() {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const eventosComLocal = await db
+    .select({
+      id: agendaEventos.id,
+      titulo: agendaEventos.titulo,
+      dataHora: agendaEventos.dataHora,
+      local: agendaEventos.local,
+      representanteLegal: agendaEventos.representanteLegal,
+      clienteNome: clientes.nome,
+    })
+    .from(agendaEventos)
+    .leftJoin(clientes, eq(agendaEventos.clienteId, clientes.id))
+    .where(and(isNotNull(agendaEventos.local), gte(agendaEventos.dataHora, hoje)))
+    .orderBy(asc(agendaEventos.dataHora));
+
+  const interessadosPorEvento = new Map<string, { nomeInteressado: string; servicoSolicitado: string | null }[]>();
+  if (eventosComLocal.length > 0) {
+    const todosInteressados = await db.select().from(agendaInteressados);
+    for (const it of todosInteressados) {
+      const lista = interessadosPorEvento.get(it.eventoId) ?? [];
+      lista.push({ nomeInteressado: it.nomeInteressado, servicoSolicitado: it.servicoSolicitado });
+      interessadosPorEvento.set(it.eventoId, lista);
+    }
+  }
+
+  return (
+    <SectionCard title="Agendamentos para Levar na Marinha">
+      {eventosComLocal.length === 0 ? (
+        <EmptyState icon={Landmark} title="Nenhum agendamento com local definido ainda" />
+      ) : (
+        <ul className="divide-y divide-outline-variant">
+          {eventosComLocal.map((ev) => {
+            const interessados = interessadosPorEvento.get(ev.id) ?? [];
+            return (
+              <li key={ev.id} className="py-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-medium text-primary">{ev.titulo}</p>
+                  <Badge tone="info" size="sm">
+                    {new Date(ev.dataHora).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}
+                  </Badge>
+                </div>
+                <p className="text-body-sm text-outline">
+                  Local: {ev.local}
+                  {ev.representanteLegal && ` — Representante Legal: ${ev.representanteLegal}`}
+                  {ev.clienteNome && ` — ${ev.clienteNome}`}
+                </p>
+                {interessados.length > 0 && (
+                  <ul className="mt-2 ml-4 list-disc text-body-sm text-primary">
+                    {interessados.map((it, idx) => (
+                      <li key={idx}>
+                        {it.nomeInteressado}
+                        {it.servicoSolicitado && ` — ${it.servicoSolicitado}`}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </SectionCard>
   );
 }
 

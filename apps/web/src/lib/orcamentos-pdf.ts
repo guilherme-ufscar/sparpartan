@@ -4,6 +4,7 @@ import path from "node:path";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orcamentos, clientes, servicos } from "@/db/schema";
+import { EMPRESA } from "@/lib/empresa";
 
 function uploadsDir() {
   return process.env.UPLOADS_DIR ?? "./data/uploads";
@@ -38,21 +39,109 @@ export async function gerarPdfCore(orcamentoId: string): Promise<{ pdfCaminho: s
     currency: "BRL",
   });
 
+  const dataEmissao = orcamento.criadoEm.toLocaleDateString("pt-BR");
+  const enderecoPartes = [
+    cliente?.rua,
+    cliente?.numero,
+    cliente?.bairro,
+    cliente?.cidade && cliente?.uf ? `${cliente.cidade} - ${cliente.uf}` : cliente?.cidade,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const descricaoItem = orcamento.descricao?.trim() || servico?.nome || "Serviço";
+
   const html = `<!doctype html>
 <html><head><meta charset="utf-8"><style>
-body { font-family: sans-serif; padding: 40px; color: #001736; }
-h1 { color: #002b5b; }
-table { width: 100%; border-collapse: collapse; margin-top: 24px; }
-td { padding: 8px 0; border-bottom: 1px solid #ddd; }
-.label { color: #666; font-size: 12px; text-transform: uppercase; }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; padding: 40px; color: #001736; font-size: 12px; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .brand h1 { margin: 0; font-size: 26px; color: #002b5b; letter-spacing: 1px; }
+  .brand p { margin: 2px 0; }
+  .numero-box { border: 1px solid #002b5b; border-radius: 6px; padding: 12px 20px; text-align: center; min-width: 180px; }
+  .numero-box .label { font-size: 11px; font-weight: bold; color: #002b5b; }
+  .numero-box .numero { font-size: 20px; font-weight: bold; color: #002b5b; margin: 4px 0; }
+  .section { border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 16px; overflow: hidden; }
+  .section-title { background: #002b5b; color: #fff; padding: 6px 12px; font-weight: bold; font-size: 12px; }
+  .section-body { padding: 12px; }
+  table.itens { width: 100%; border-collapse: collapse; }
+  table.itens th { background: #002b5b; color: #fff; text-align: left; padding: 8px; font-size: 11px; }
+  table.itens td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
+  table.itens tr.total td { background: #002b5b; color: #fff; font-weight: bold; }
+  .footer { margin-top: 24px; text-align: center; font-size: 10px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+  .page-break { page-break-before: always; }
+  .assinaturas { display: flex; justify-content: space-between; margin-top: 80px; gap: 40px; }
+  .assinatura-box { flex: 1; border-top: 1px solid #001736; padding-top: 8px; text-align: center; }
 </style></head><body>
-<h1>Orçamento ${orcamento.numero}</h1>
-<table>
-<tr><td class="label">Cliente</td><td>${cliente?.nome ?? ""}</td></tr>
-<tr><td class="label">Serviço</td><td>${servico?.nome ?? ""}</td></tr>
-<tr><td class="label">Valor</td><td>${valorFormatado}</td></tr>
-<tr><td class="label">Válido até</td><td>${orcamento.validoAte ?? "—"}</td></tr>
-</table>
+
+<div class="header">
+  <div class="brand">
+    <h1>${EMPRESA.nome}</h1>
+    <p>${EMPRESA.razaoSocial}</p>
+    <p>CNPJ: ${EMPRESA.cnpj}</p>
+    <p>${EMPRESA.email}</p>
+  </div>
+  <div class="numero-box">
+    <div class="label">ORÇAMENTO Nº</div>
+    <div class="numero">${orcamento.numero}</div>
+    <div>${dataEmissao}</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">DADOS DO CONTRATANTE</div>
+  <div class="section-body">
+    <p><strong>Nome:</strong> ${cliente?.nome ?? "—"}</p>
+    <p><strong>CPF/CNPJ:</strong> ${cliente?.cpfCnpj ?? "—"}</p>
+    <p><strong>Endereço:</strong> ${enderecoPartes || "—"}</p>
+    <p><strong>CEP:</strong> ${cliente?.cep ?? "—"}</p>
+    <p><strong>Telefone:</strong> ${cliente?.telefone ?? cliente?.celular ?? "—"}</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ITENS DO ORÇAMENTO</div>
+  <div class="section-body" style="padding:0">
+    <table class="itens">
+      <thead><tr><th>Qtd</th><th>Item</th><th>Descrição</th><th>Preço Unit.</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Item 1</td><td>${descricaoItem}</td><td>${valorFormatado}</td><td>${valorFormatado}</td></tr>
+        <tr class="total"><td colspan="4">VALOR TOTAL</td><td>${valorFormatado}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+${
+  orcamento.validoAte
+    ? `<div class="section"><div class="section-title">VALIDADE</div><div class="section-body"><p>Esta proposta é válida até ${orcamento.validoAte}.</p></div></div>`
+    : ""
+}
+
+${
+  orcamento.observacoes
+    ? `<div class="section"><div class="section-title">OBSERVAÇÕES E CONDIÇÕES</div><div class="section-body"><p style="white-space:pre-wrap">${orcamento.observacoes}</p></div></div>`
+    : ""
+}
+
+<div class="footer">${EMPRESA.nome} ${EMPRESA.razaoSocial} | CNPJ: ${EMPRESA.cnpj} — Página 1</div>
+
+<div class="page-break"></div>
+
+<p>Para aceitar este orçamento, assine abaixo e devolva para o remetente.</p>
+
+<div class="assinaturas">
+  <div class="assinatura-box">
+    <p>Assinatura do Contratante</p>
+    <p><strong>${cliente?.nome ?? ""}</strong></p>
+  </div>
+  <div class="assinatura-box">
+    <p>Assinatura — ${EMPRESA.nome} ${EMPRESA.razaoSocial}</p>
+    <p><strong>CNPJ: ${EMPRESA.cnpj}</strong></p>
+  </div>
+</div>
+
+<div class="footer">${EMPRESA.nome} ${EMPRESA.razaoSocial} | CNPJ: ${EMPRESA.cnpj} — Página 2</div>
+
 </body></html>`;
 
   const gotenbergUrl = process.env.GOTENBERG_URL ?? "http://gotenberg:3000";

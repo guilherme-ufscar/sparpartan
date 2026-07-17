@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { clientes } from "@/db/schema";
+import { clientes, embarcacoes, processos, orcamentos, obras } from "@/db/schema";
 import { registrarAuditoria } from "@/lib/audit";
 import { criarSolicitacao } from "@/lib/solicitacoes";
 import {
@@ -72,15 +72,100 @@ export async function criarCliente(
   redirect("/clientes");
 }
 
+export async function atualizarCliente(
+  clienteId: string,
+  _estadoAnterior: EstadoForm,
+  formData: FormData
+): Promise<EstadoForm> {
+  const nome = String(formData.get("nome") ?? "").trim();
+  const cpfCnpj = String(formData.get("cpfCnpj") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const uf = String(formData.get("uf") ?? "").trim();
+  const dataNascimento = String(formData.get("dataNascimento") ?? "").trim();
+  const valores = valoresDoFormData(formData);
+
+  const erro = new Validador()
+    .exigir(!!nome, "Informe o nome.")
+    .exigir(!!cpfCnpj, "Informe o CPF ou CNPJ.")
+    .sePreenchido(cpfCnpj, cpfCnpjValido, "CPF/CNPJ inválido — confira os dígitos.")
+    .sePreenchido(email, emailValido, "E-mail inválido.")
+    .sePreenchido(uf, ufValida, "UF inválida (use a sigla, ex: SP).")
+    .sePreenchido(dataNascimento, dataNoPassado, "Data de nascimento não pode ser no futuro.").erro;
+
+  if (erro) return { erro, valores };
+
+  const [jaExiste] = await db
+    .select({ id: clientes.id })
+    .from(clientes)
+    .where(eq(clientes.cpfCnpj, cpfCnpj))
+    .limit(1);
+  if (jaExiste && jaExiste.id !== clienteId) {
+    return { erro: "Já existe um cliente com esse CPF/CNPJ.", valores };
+  }
+
+  await db
+    .update(clientes)
+    .set({
+      nome,
+      tipo: String(formData.get("tipo") ?? "pessoa_fisica") as "pessoa_fisica" | "pessoa_juridica",
+      cpfCnpj,
+      rg: String(formData.get("rg") ?? "") || null,
+      dataNascimento: String(formData.get("dataNascimento") ?? "") || null,
+      email: String(formData.get("email") ?? "") || null,
+      telefone: String(formData.get("telefone") ?? "") || null,
+      celular: String(formData.get("celular") ?? "") || null,
+      cep: String(formData.get("cep") ?? "") || null,
+      rua: String(formData.get("rua") ?? "") || null,
+      numero: String(formData.get("numero") ?? "") || null,
+      complemento: String(formData.get("complemento") ?? "") || null,
+      bairro: String(formData.get("bairro") ?? "") || null,
+      cidade: String(formData.get("cidade") ?? "") || null,
+      uf: String(formData.get("uf") ?? "") || null,
+      indicadoPor: String(formData.get("indicadoPor") ?? "") || null,
+      observacoes: String(formData.get("observacoes") ?? "") || null,
+      atualizadoEm: new Date(),
+    })
+    .where(eq(clientes.id, clienteId));
+
+  await registrarAuditoria("atualizar", "cliente", clienteId, nome);
+
+  redirect(`/clientes/${clienteId}`);
+}
+
 export async function excluirCliente(clienteId: string) {
-  await db.update(clientes).set({ excluidoEm: new Date() }).where(eq(clientes.id, clienteId));
-  await registrarAuditoria("excluir", "cliente", clienteId);
+  await db.transaction(async (tx) => {
+    const agora = new Date();
+    await tx.update(clientes).set({ excluidoEm: agora }).where(eq(clientes.id, clienteId));
+    await tx
+      .update(embarcacoes)
+      .set({ excluidoEm: agora, ativo: false })
+      .where(eq(embarcacoes.clienteId, clienteId));
+    await tx
+      .update(processos)
+      .set({ excluidoEm: agora })
+      .where(eq(processos.clienteId, clienteId));
+    await tx
+      .update(orcamentos)
+      .set({ excluidoEm: agora })
+      .where(eq(orcamentos.clienteId, clienteId));
+    await tx.update(obras).set({ excluidoEm: agora }).where(eq(obras.clienteId, clienteId));
+  });
+  await registrarAuditoria("excluir", "cliente", clienteId, "exclusão em cascata (embarcações/processos/orçamentos/obras)");
   redirect("/clientes");
 }
 
 export async function restaurarCliente(clienteId: string) {
-  await db.update(clientes).set({ excluidoEm: null }).where(eq(clientes.id, clienteId));
-  await registrarAuditoria("atualizar", "cliente", clienteId, "restaurado da lixeira");
+  await db.transaction(async (tx) => {
+    await tx.update(clientes).set({ excluidoEm: null }).where(eq(clientes.id, clienteId));
+    await tx
+      .update(embarcacoes)
+      .set({ excluidoEm: null, ativo: true })
+      .where(eq(embarcacoes.clienteId, clienteId));
+    await tx.update(processos).set({ excluidoEm: null }).where(eq(processos.clienteId, clienteId));
+    await tx.update(orcamentos).set({ excluidoEm: null }).where(eq(orcamentos.clienteId, clienteId));
+    await tx.update(obras).set({ excluidoEm: null }).where(eq(obras.clienteId, clienteId));
+  });
+  await registrarAuditoria("atualizar", "cliente", clienteId, "restaurado da lixeira (em cascata)");
   redirect("/clientes/lixeira");
 }
 

@@ -2,7 +2,7 @@ import { and, desc, eq, ne } from "drizzle-orm";
 import { BellRing, Bot, UserRound, User } from "lucide-react";
 import { db } from "@/db";
 import { lembretes, clientes } from "@/db/schema";
-import { Badge, Button, ConfirmButton, EmptyState } from "@/components/ui";
+import { Badge, Button, ConfirmButton, EmptyState, LinkButton } from "@/components/ui";
 import { urgenciaVencimento, infoUrgencia, rotuloPrazo } from "@/lib/status";
 import { resolverLembrete, resolverTodosLembretes } from "./actions";
 
@@ -35,8 +35,15 @@ export default async function LembretesPage() {
           <p className="text-body-sm text-outline">
             Gerados automaticamente pelo sistema — vencimentos de documento em 30/15/7 dias e
             confirmação de compromissos/provas do dia seguinte. Resolvidos sozinhos quando a
-            causa deixa de existir (documento renovado, evento confirmado).
+            causa deixa de existir (documento renovado, evento confirmado). Para criar um
+            lembrete manual (ou ver os que a equipe já cadastrou), use a página{" "}
+            <strong>Pendentes</strong>.
           </p>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <LinkButton href="/pendentes" variant="outlined" size="sm">
+            Ir para Pendentes
+          </LinkButton>
         </div>
         {lista.length > 0 && (
           <form action={resolverTodosLembretes}>

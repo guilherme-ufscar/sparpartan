@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orcamentos, clientes, servicos } from "@/db/schema";
 import { SectionCard } from "@/components/ui/form-field";
-import { StatusBadge, Button, LinkButton } from "@/components/ui";
+import { StatusBadge, Button, LinkButton, BackButton } from "@/components/ui";
 import { statusOrcamento, urgenciaVencimento, infoUrgencia, rotuloPrazo } from "@/lib/status";
 import {
   gerarPdfOrcamento,
@@ -51,11 +51,19 @@ export default async function OrcamentoDetalhesPage({
 
   return (
     <div className="space-y-gutter">
-      <div className="flex items-center gap-3">
-        <h1 className="font-display text-headline-lg font-bold text-primary">
-          Orçamento {orcamento.numero}
-        </h1>
-        <StatusBadge status={statusOrcamento(orcamento.status)} />
+      <BackButton href="/orcamentos" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h1 className="font-display text-headline-lg font-bold text-primary">
+            Orçamento {orcamento.numero}
+          </h1>
+          <StatusBadge status={statusOrcamento(orcamento.status)} />
+        </div>
+        {orcamento.status === "pendente" && (
+          <LinkButton href={`/orcamentos/${id}/editar`} variant="outlined">
+            Editar
+          </LinkButton>
+        )}
       </div>
 
       <SectionCard title="Detalhes">
@@ -85,6 +93,22 @@ export default async function OrcamentoDetalhesPage({
             </dd>
           </div>
         </dl>
+        {(orcamento.descricao || orcamento.observacoes) && (
+          <dl className="mt-4 grid grid-cols-1 gap-4 text-body-md sm:grid-cols-2">
+            {orcamento.descricao && (
+              <div>
+                <dt className="font-mono-caps text-label-sm uppercase text-outline">Descrição</dt>
+                <dd className="whitespace-pre-wrap text-primary">{orcamento.descricao}</dd>
+              </div>
+            )}
+            {orcamento.observacoes && (
+              <div>
+                <dt className="font-mono-caps text-label-sm uppercase text-outline">Observações</dt>
+                <dd className="whitespace-pre-wrap text-primary">{orcamento.observacoes}</dd>
+              </div>
+            )}
+          </dl>
+        )}
       </SectionCard>
 
       <SectionCard title="Ações">

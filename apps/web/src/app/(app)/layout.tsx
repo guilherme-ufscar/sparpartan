@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { Sidebar } from "@/components/layout/sidebar";
 import { BottomNav } from "@/components/layout/bottom-nav";
@@ -15,7 +16,10 @@ export default async function AppLayout({
     <div className="min-h-screen bg-surface">
       <Sidebar userName={session?.user?.name} userRole={(session?.user as { role?: string })?.role} />
       <header className="fixed left-0 right-0 top-0 z-10 flex h-16 items-center justify-between border-b border-outline-variant bg-surface-bright px-4 lg:left-64">
-        <p className="font-display text-lg font-bold text-primary">Sparapan Solução Naval</p>
+        <div className="flex items-center gap-2">
+          <Image src="/logo.svg" alt="Sparapan" width={28} height={28} className="lg:hidden" />
+          <p className="font-display text-lg font-bold text-primary">Sparapan Solução Naval</p>
+        </div>
         <ThemeToggle />
       </header>
       <main className="px-margin-mobile pb-24 pt-20 lg:ml-64 lg:px-margin-desktop lg:pb-margin-desktop">

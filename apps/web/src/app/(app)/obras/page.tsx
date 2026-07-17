@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { HardHat } from "lucide-react";
 import { db } from "@/db";
 import { obras, clientes } from "@/db/schema";
@@ -21,6 +21,7 @@ export default async function ObrasPage() {
     })
     .from(obras)
     .innerJoin(clientes, eq(obras.clienteId, clientes.id))
+    .where(and(isNull(obras.excluidoEm), isNull(clientes.excluidoEm)))
     .orderBy(desc(obras.criadoEm));
 
   const columns: Column<LinhaObra>[] = [

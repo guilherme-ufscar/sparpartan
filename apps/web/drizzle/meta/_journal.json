@@ -141,6 +141,13 @@
       "when": 1783876309796,
       "tag": "0019_orange_karnak",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1784303658989,
+      "tag": "0020_friendly_starhawk",
+      "breakpoints": true
     }
   ]
 }

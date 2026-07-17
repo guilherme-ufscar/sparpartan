@@ -29,20 +29,54 @@ export async function criarProcesso(
   _estadoAnterior: EstadoForm,
   formData: FormData
 ): Promise<EstadoForm> {
-  const clienteId = String(formData.get("clienteId") ?? "");
+  const modoCliente = String(formData.get("modoCliente") ?? "existente");
   const servicoId = String(formData.get("servicoId") ?? "");
   const embarcacaoId = String(formData.get("embarcacaoId") ?? "") || null;
   const valores = valoresDoFormData(formData);
 
-  const erro = new Validador()
-    .exigir(!!clienteId, "Selecione o cliente.")
-    .exigir(!!servicoId, "Selecione o serviço.").erro;
+  let clienteId = String(formData.get("clienteId") ?? "");
 
-  if (erro) return { erro, valores };
+  if (modoCliente === "novo") {
+    const nomeNovoCliente = String(formData.get("clienteNovoNome") ?? "").trim();
+    const cpfCnpjNovoCliente = String(formData.get("clienteNovoCpfCnpj") ?? "").trim();
+
+    const erroCliente = new Validador()
+      .exigir(!!nomeNovoCliente, "Informe o nome do novo cliente.")
+      .exigir(!!cpfCnpjNovoCliente, "Informe o CPF/CNPJ do novo cliente.")
+      .exigir(!!servicoId, "Selecione o serviço.").erro;
+    if (erroCliente) return { erro: erroCliente, valores };
+
+    const [jaExiste] = await db
+      .select({ id: clientes.id })
+      .from(clientes)
+      .where(eq(clientes.cpfCnpj, cpfCnpjNovoCliente))
+      .limit(1);
+    if (jaExiste) {
+      return { erro: "Já existe um cliente com esse CPF/CNPJ. Use a busca de cliente existente.", valores };
+    }
+
+    const [novoCliente] = await db
+      .insert(clientes)
+      .values({
+        nome: nomeNovoCliente,
+        cpfCnpj: cpfCnpjNovoCliente,
+        telefone: String(formData.get("clienteNovoTelefone") ?? "") || null,
+      })
+      .returning({ id: clientes.id });
+    clienteId = novoCliente.id;
+    await registrarAuditoria("criar", "cliente", clienteId, nomeNovoCliente);
+  } else {
+    const erro = new Validador()
+      .exigir(!!clienteId, "Selecione o cliente.")
+      .exigir(!!servicoId, "Selecione o serviço.").erro;
+    if (erro) return { erro, valores };
+  }
+
+  const responsavelId = String(formData.get("responsavelId") ?? "") || null;
 
   const [processo] = await db
     .insert(processos)
-    .values({ clienteId, servicoId, embarcacaoId })
+    .values({ clienteId, servicoId, embarcacaoId, responsavelId })
     .returning({ id: processos.id });
 
   await reclassificarProcesso(processo.id);
@@ -56,6 +90,9 @@ export async function protocolarProcesso(processoId: string, formData: FormData)
 
   const [processo] = await db.select().from(processos).where(eq(processos.id, processoId)).limit(1);
   if (!processo) throw new Error("Processo não encontrado");
+  if (!processo.embarcacaoId) {
+    throw new Error("Vincule uma embarcação ao cliente/processo antes de protocolar.");
+  }
 
   const faltando = await pendenciasDoProcesso(processoId);
   if (faltando.length > 0) {

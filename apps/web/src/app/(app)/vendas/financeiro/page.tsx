@@ -1,8 +1,8 @@
-import { sql, eq } from "drizzle-orm";
+import { and, sql, eq, gte, lt } from "drizzle-orm";
 import { TrendingUp, TrendingDown, Wallet, Clock } from "lucide-react";
 import { db } from "@/db";
 import { servicosContratados, pagamentos, despesas, servicos, processos, usuarios } from "@/db/schema";
-import { StatCard, LinkButton, BarChart, DataTable, type Column } from "@/components/ui";
+import { StatCard, LinkButton, Button, BarChart, DataTable, type Column } from "@/components/ui";
 
 function formatMoney(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -15,15 +15,33 @@ type LinhaMargem = {
   margemUnitaria: number | null;
 };
 
-export default async function FinanceiroPage() {
+export default async function FinanceiroPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mes?: string }>;
+}) {
+  const { mes } = await searchParams;
+  const mesValido = mes && /^\d{4}-\d{2}$/.test(mes) ? mes : null;
+
+  let filtroMesPagamentos = undefined;
+  let filtroMesDespesas = undefined;
+  if (mesValido) {
+    const [ano, mesNum] = mesValido.split("-").map(Number);
+    const inicio = new Date(ano, mesNum - 1, 1).toISOString().slice(0, 10);
+    const fim = new Date(ano, mesNum, 1).toISOString().slice(0, 10);
+    filtroMesPagamentos = and(gte(pagamentos.dataPagamento, inicio), lt(pagamentos.dataPagamento, fim));
+    filtroMesDespesas = and(gte(despesas.data, inicio), lt(despesas.data, fim));
+  }
+
   const [{ totalEntradas }] = await db
     .select({ totalEntradas: sql<number>`coalesce(sum(${pagamentos.valor}), 0)::float` })
     .from(pagamentos)
-    .where(eq(pagamentos.status, "pago"));
+    .where(mesValido ? and(eq(pagamentos.status, "pago"), filtroMesPagamentos) : eq(pagamentos.status, "pago"));
 
   const [{ totalSaidas }] = await db
     .select({ totalSaidas: sql<number>`coalesce(sum(${despesas.valor}), 0)::float` })
-    .from(despesas);
+    .from(despesas)
+    .where(filtroMesDespesas);
 
   const lucro = totalEntradas - totalSaidas;
 
@@ -97,9 +115,9 @@ export default async function FinanceiroPage() {
 
   return (
     <div className="space-y-gutter">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-headline-lg font-bold text-primary">Financeiro</h1>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <LinkButton href="/vendas/despesas" variant="outlined" size="sm">
             Despesas
           </LinkButton>
@@ -108,6 +126,28 @@ export default async function FinanceiroPage() {
           </LinkButton>
         </div>
       </div>
+
+      <form method="get" className="flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1">
+          <span className="font-mono-caps text-[11px] uppercase tracking-wide text-outline">
+            Ver por mês (competência)
+          </span>
+          <input
+            type="month"
+            name="mes"
+            defaultValue={mesValido ?? ""}
+            className="rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm text-primary outline-none focus:border-primary"
+          />
+        </label>
+        <Button type="submit" variant="outlined" size="sm">
+          Filtrar
+        </Button>
+        {mesValido && (
+          <LinkButton href="/vendas/financeiro" variant="text" size="sm">
+            Ver acumulado total
+          </LinkButton>
+        )}
+      </form>
 
       <div className="grid grid-cols-2 gap-gutter sm:grid-cols-4">
         <StatCard label="Entradas" value={formatMoney(totalEntradas)} icon={TrendingUp} tone="success" />

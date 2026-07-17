@@ -31,6 +31,7 @@ export async function adicionarHabilitacao(clienteId: string, formData: FormData
 export async function enviarArquivo(clienteId: string, formData: FormData) {
   const tipo = String(formData.get("tipo") ?? "").trim();
   const arquivo = formData.get("arquivo") as File | null;
+  const embarcacaoId = String(formData.get("embarcacaoId") ?? "").trim() || null;
   if (!tipo || !arquivo) {
     throw new Error("Tipo e arquivo são obrigatórios");
   }
@@ -51,6 +52,7 @@ export async function enviarArquivo(clienteId: string, formData: FormData) {
 
   await db.insert(arquivos).values({
     clienteId,
+    embarcacaoId,
     tipo,
     nomeOriginal: arquivo.name,
     caminho: path.join("clientes", clienteId, nomeArquivo),

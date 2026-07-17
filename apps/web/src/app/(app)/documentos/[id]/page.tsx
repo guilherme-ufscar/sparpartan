@@ -1,6 +1,9 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { notFound } from "next/navigation";
 import { eq, desc } from "drizzle-orm";
 import { Download } from "lucide-react";
+import { PDFDocument } from "pdf-lib";
 import { db } from "@/db";
 import { documentosGerados, modelosDocumento, clientes, assinaturas } from "@/db/schema";
 import { SectionCard } from "@/components/ui/form-field";
@@ -42,6 +45,18 @@ export default async function DocumentoDetalhesPage({
 
   const solicitarAssinaturaComId = solicitarAssinatura.bind(null, id);
 
+  let totalPaginas = 0;
+  if (documento.pdfCaminho) {
+    try {
+      const uploadsDir = process.env.UPLOADS_DIR ?? "./data/uploads";
+      const bytes = await readFile(path.join(uploadsDir, documento.pdfCaminho));
+      const pdf = await PDFDocument.load(bytes);
+      totalPaginas = pdf.getPageCount();
+    } catch {
+      totalPaginas = 0;
+    }
+  }
+
   return (
     <div className="space-y-gutter">
       <h1 className="font-display text-headline-lg font-bold text-primary">
@@ -65,6 +80,36 @@ export default async function DocumentoDetalhesPage({
           )}
         </div>
       </SectionCard>
+
+      {documento.pdfCaminho && totalPaginas > 1 && (
+        <SectionCard title="Baixar Página por Página">
+          <p className="mb-3 text-body-sm text-outline">
+            Útil quando só uma folha do documento (ex.: um termo específico) precisa ser assinada
+            separadamente.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <LinkButton
+              href={`/api/documentos/${documento.id}?tipo=pdf&formato=zip`}
+              variant="outlined"
+              icon={Download}
+            >
+              Baixar todas as páginas separadas (.zip)
+            </LinkButton>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
+              <LinkButton
+                key={n}
+                href={`/api/documentos/${documento.id}?tipo=pdf&pagina=${n}`}
+                variant="text"
+                size="sm"
+              >
+                Página {n}
+              </LinkButton>
+            ))}
+          </div>
+        </SectionCard>
+      )}
 
       <SectionCard title="Assinatura Digital">
         {!assinatura && (

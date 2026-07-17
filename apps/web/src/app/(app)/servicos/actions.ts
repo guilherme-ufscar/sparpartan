@@ -22,7 +22,11 @@ export async function criarServico(
     descricao: String(formData.get("descricao") ?? "") || null,
     valor: String(formData.get("valor") ?? "") || null,
     custo: String(formData.get("custo") ?? "") || null,
-    categoria: String(formData.get("categoria") ?? "despachante") as "despachante" | "escola",
+    categoria: String(formData.get("categoria") ?? "despachante") as
+      | "despachante"
+      | "escola"
+      | "engenharia"
+      | "ultrassom",
     norma: String(formData.get("norma") ?? "") || null,
   });
 

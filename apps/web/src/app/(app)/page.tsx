@@ -25,6 +25,7 @@ import {
   orcamentos,
   pagamentos,
   servicosContratados,
+  usuarios,
 } from "@/db/schema";
 import { StatCard, AlertCard, Badge, EmptyState, BarChart } from "@/components/ui";
 import { tipoEvento, infoUrgencia, urgenciaVencimento, rotuloPrazo, ordenarPorUrgencia } from "@/lib/status";
@@ -122,6 +123,18 @@ export default async function HomePage() {
     .from(orcamentos)
     .where(eq(orcamentos.status, "pendente"));
   const orcamentosPendentes = orcamentosPendentesRows[0]?.n ?? 0;
+
+  const andamentoPorColaborador = await db
+    .select({
+      colaboradorNome: usuarios.nome,
+      aguardando: sql<number>`count(*) filter (where ${processos.status} in ('aberto', 'documentos_pendentes', 'pronto_para_protocolo'))::int`,
+      protocolado: sql<number>`count(*) filter (where ${processos.status} = 'protocolado')::int`,
+      finalizados: sql<number>`count(*) filter (where ${processos.status} = 'concluido')::int`,
+    })
+    .from(processos)
+    .innerJoin(usuarios, eq(processos.responsavelId, usuarios.id))
+    .groupBy(usuarios.id, usuarios.nome)
+    .orderBy(usuarios.nome);
 
   const alertas: { tone: "danger" | "warning"; title: string; description?: string; href: string }[] = [];
   if (docsPendentes > 0) {
@@ -288,6 +301,28 @@ export default async function HomePage() {
           )}
         </div>
       </div>
+
+      {andamentoPorColaborador.length > 0 && (
+        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6">
+          <h2 className="mb-4 font-display text-title-lg font-semibold text-primary">
+            Andamento por Colaborador
+          </h2>
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {andamentoPorColaborador.map((c) => (
+              <li key={c.colaboradorNome} className="rounded-lg border border-outline-variant p-4">
+                <p className="mb-2 font-display text-body-lg font-semibold text-primary">
+                  {c.colaboradorNome}
+                </p>
+                <div className="flex flex-wrap gap-2 text-body-sm">
+                  <Badge tone="info" size="sm">{c.aguardando} aguardando</Badge>
+                  <Badge tone="warning" size="sm">{c.protocolado} protocolado</Badge>
+                  <Badge tone="success" size="sm">{c.finalizados} finalizados</Badge>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-gutter lg:grid-cols-2">
         {sazonalidade.length > 0 && (

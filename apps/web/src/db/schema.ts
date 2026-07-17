@@ -15,8 +15,15 @@ import {
 export const userRole = pgEnum("user_role", ["admin", "operador", "leitura"]);
 export const clienteTipo = pgEnum("cliente_tipo", ["pessoa_fisica", "pessoa_juridica"]);
 export const habilitacaoTipo = pgEnum("habilitacao_tipo", ["CHA", "CIR"]);
-export const servicoCategoria = pgEnum("servico_categoria", ["despachante", "escola"]);
+export const servicoCategoria = pgEnum("servico_categoria", [
+  "despachante",
+  "escola",
+  "engenharia",
+  "ultrassom",
+]);
 export const catalogoTipo = pgEnum("catalogo_tipo", ["embarcacao", "motor", "carreta"]);
+export const embarcacaoClasse = pgEnum("embarcacao_classe", ["esporte_recreio", "comercial"]);
+export const taxaStatus = pgEnum("taxa_status", ["pendente", "pago"]);
 export const documentoStatus = pgEnum("documento_status", ["gerado", "protocolado", "vencido"]);
 export const processoStatus = pgEnum("processo_status", [
   "aberto",
@@ -176,7 +183,9 @@ export const embarcacoes = pgTable("embarcacoes", {
   apoliceDpem: text("apolice_dpem"),
   validadeDpem: date("validade_dpem"),
   tipoPropulsao: text("tipo_propulsao"),
+  classe: embarcacaoClasse("classe").notNull().default("esporte_recreio"),
   ativo: boolean("ativo").notNull().default(true),
+  excluidoEm: timestamp("excluido_em"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
   atualizadoEm: timestamp("atualizado_em").notNull().defaultNow(),
 });
@@ -220,6 +229,16 @@ export const habilitacoes = pgTable("habilitacoes", {
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
 });
 
+export const engenheiros = pgTable("engenheiros", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  nomeCompleto: text("nome_completo").notNull(),
+  cpf: text("cpf"),
+  crea: text("crea"),
+  tituloProfissional: text("titulo_profissional"),
+  ativo: boolean("ativo").notNull().default(true),
+  criadoEm: timestamp("criado_em").notNull().defaultNow(),
+});
+
 export const obras = pgTable("obras", {
   id: uuid("id").primaryKey().defaultRandom(),
   clienteId: uuid("cliente_id")
@@ -235,6 +254,7 @@ export const obras = pgTable("obras", {
   cpDlAg: text("cp_dl_ag"),
   respTecnico: text("resp_tecnico"),
   nCrea: text("n_crea"),
+  engenheiroId: uuid("engenheiro_id").references(() => engenheiros.id, { onDelete: "set null" }),
   // Localização
   rioLocalizado: text("rio_localizado"),
   distanciaRioKm: numeric("distancia_rio_km"),
@@ -272,6 +292,7 @@ export const obras = pgTable("obras", {
   matTambores: text("mat_tambores"),
   qntTambores: integer("qnt_tambores"),
   volumeTambores: numeric("volume_tambores"),
+  excluidoEm: timestamp("excluido_em"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
   atualizadoEm: timestamp("atualizado_em").notNull().defaultNow(),
 });
@@ -321,6 +342,7 @@ export const arquivos = pgTable("arquivos", {
   requisitoId: uuid("requisito_id").references(() => requisitosDocumento.id, {
     onDelete: "set null",
   }),
+  embarcacaoId: uuid("embarcacao_id").references(() => embarcacoes.id, { onDelete: "set null" }),
   tipo: text("tipo").notNull(),
   nomeOriginal: text("nome_original").notNull(),
   caminho: text("caminho").notNull(),
@@ -373,6 +395,7 @@ export const processos = pgTable("processos", {
   dataProtocolo: date("data_protocolo"),
   protocoloEscaneadoCaminho: text("protocolo_escaneado_caminho"),
   observacoes: text("observacoes"),
+  excluidoEm: timestamp("excluido_em"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
   atualizadoEm: timestamp("atualizado_em").notNull().defaultNow(),
 });
@@ -411,9 +434,12 @@ export const orcamentos = pgTable("orcamentos", {
   }),
   vendedorId: uuid("vendedor_id").references(() => usuarios.id, { onDelete: "set null" }),
   valor: numeric("valor").notNull(),
+  descricao: text("descricao"),
+  observacoes: text("observacoes"),
   status: orcamentoStatus("status").notNull().default("pendente"),
   validoAte: date("valido_ate"),
   pdfCaminho: text("pdf_caminho"),
+  excluidoEm: timestamp("excluido_em"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
 });
 
@@ -455,7 +481,22 @@ export const agendaEventos = pgTable("agenda_eventos", {
   dataHora: timestamp("data_hora").notNull(),
   tipo: eventoTipo("tipo").notNull().default("compromisso"),
   status: eventoStatus("status").notNull().default("pendente"),
+  local: text("local"),
+  representanteLegal: text("representante_legal"),
   observacoes: text("observacoes"),
+  criadoEm: timestamp("criado_em").notNull().defaultNow(),
+});
+
+/** Interessados/serviços vinculados a um agendamento na Marinha (1 evento pode ter vários). */
+export const agendaInteressados = pgTable("agenda_interessados", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  eventoId: uuid("evento_id")
+    .notNull()
+    .references(() => agendaEventos.id, { onDelete: "cascade" }),
+  clienteId: uuid("cliente_id").references(() => clientes.id, { onDelete: "set null" }),
+  nomeInteressado: text("nome_interessado").notNull(),
+  cpfInteressado: text("cpf_interessado"),
+  servicoSolicitado: text("servico_solicitado"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
 });
 
@@ -518,6 +559,8 @@ export const despesas = pgTable("despesas", {
   valor: numeric("valor").notNull(),
   categoria: despesaCategoria("categoria").notNull().default("variavel"),
   data: date("data").notNull(),
+  recorrente: boolean("recorrente").notNull().default(false),
+  diaVencimento: integer("dia_vencimento"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
 });
 
@@ -748,4 +791,45 @@ export const pedidosPagamento = pgTable("pedidos_pagamento", {
   mercadopagoPaymentId: text("mercadopago_payment_id"),
   criadoEm: timestamp("criado_em").notNull().defaultNow(),
   atualizadoEm: timestamp("atualizado_em"),
+});
+
+// ---------------------------------------------------------------------------
+// Itens adicionais pedidos pelo cliente (pós-M10, 2ª rodada)
+// ---------------------------------------------------------------------------
+
+/** Taxas/boletos de órgãos (Marinha etc.) a pagar por um processo/serviço. */
+export const taxasPagar = pgTable("taxas_pagar", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  processoId: uuid("processo_id").references(() => processos.id, { onDelete: "set null" }),
+  clienteId: uuid("cliente_id").references(() => clientes.id, { onDelete: "set null" }),
+  servicoContratadoId: uuid("servico_contratado_id").references(() => servicosContratados.id, {
+    onDelete: "set null",
+  }),
+  descricao: text("descricao").notNull(),
+  valor: numeric("valor").notNull(),
+  vencimento: date("vencimento"),
+  status: taxaStatus("status").notNull().default("pendente"),
+  arquivoCaminho: text("arquivo_caminho"),
+  pagoEm: timestamp("pago_em"),
+  formaPagamento: text("forma_pagamento"),
+  criadoEm: timestamp("criado_em").notNull().defaultNow(),
+});
+
+/** Repositório institucional: dados de embarcações/seguros/memoriais da própria empresa. */
+export const arquivosEmpresa = pgTable("arquivos_empresa", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  categoria: text("categoria").notNull(),
+  titulo: text("titulo").notNull(),
+  descricao: text("descricao"),
+  arquivoCaminho: text("arquivo_caminho").notNull(),
+  criadoEm: timestamp("criado_em").notNull().defaultNow(),
+});
+
+/** Chat interno da equipe — canal único (MVP). */
+export const mensagens = pgTable("mensagens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  usuarioId: uuid("usuario_id").references(() => usuarios.id, { onDelete: "set null" }),
+  usuarioNome: text("usuario_nome").notNull(),
+  corpo: text("corpo").notNull(),
+  criadoEm: timestamp("criado_em").notNull().defaultNow(),
 });

@@ -1,9 +1,10 @@
 import { desc } from "drizzle-orm";
-import { Receipt } from "lucide-react";
+import { Receipt, Repeat } from "lucide-react";
 import { db } from "@/db";
 import { despesas } from "@/db/schema";
-import { Badge, EmptyState, DataTable, type Column } from "@/components/ui";
+import { Badge, Button, EmptyState, DataTable, type Column } from "@/components/ui";
 import { NovaDespesaForm } from "./form";
+import { replicarDespesasRecorrentes } from "./actions";
 
 function formatMoney(v: string) {
   return Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -15,7 +16,15 @@ export default async function DespesasPage() {
   const lista = await db.select().from(despesas).orderBy(desc(despesas.data));
 
   const columns: Column<LinhaDespesa>[] = [
-    { header: "Descrição", cell: (d) => <span className="font-medium text-primary">{d.descricao}</span> },
+    {
+      header: "Descrição",
+      cell: (d) => (
+        <span className="flex items-center gap-2 font-medium text-primary">
+          {d.descricao}
+          {d.recorrente && <Repeat size={12} className="text-outline" />}
+        </span>
+      ),
+    },
     {
       header: "Categoria",
       cell: (d) => (
@@ -30,7 +39,18 @@ export default async function DespesasPage() {
 
   return (
     <div className="space-y-gutter">
-      <h1 className="font-display text-headline-lg font-bold text-primary">Despesas</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-headline-lg font-bold text-primary">Despesas e Custos Mensais</h1>
+        <form action={replicarDespesasRecorrentes}>
+          <Button type="submit" variant="outlined" icon={Repeat}>
+            Lançar despesas fixas deste mês
+          </Button>
+        </form>
+      </div>
+      <p className="text-body-sm text-outline">
+        Marque uma despesa como &quot;recorrente&quot; para poder relançá-la automaticamente
+        todo mês com um clique, mantendo o mesmo dia de vencimento.
+      </p>
 
       <NovaDespesaForm />
 

@@ -63,3 +63,22 @@ export function validarArquivo(
 
   return null;
 }
+
+const MIME_POR_EXTENSAO: Record<string, string> = {
+  ".pdf": "application/pdf",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+  ".heic": "image/heic",
+  ".doc": "application/msword",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+};
+
+/** Usado para servir arquivos com preview inline no navegador (`Content-Type` correto). */
+export function mimeTypePorExtensao(nomeArquivo: string): string {
+  const nome = nomeArquivo.toLowerCase();
+  const extensao = nome.slice(nome.lastIndexOf("."));
+  return MIME_POR_EXTENSAO[extensao] ?? "application/octet-stream";
+}
