@@ -10,7 +10,6 @@ import { criarSolicitacao } from "@/lib/solicitacoes";
 import { pendenciasDoProcesso, reclassificarProcesso } from "@/lib/processos";
 import {
   processos,
-  modelosDocumento,
   documentosGerados,
   clientes,
   servicos,

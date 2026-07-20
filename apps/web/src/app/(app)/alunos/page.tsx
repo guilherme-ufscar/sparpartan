@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, or, count, sql } from "drizzle-orm";
+import { and, desc, ilike, or, count, sql } from "drizzle-orm";
 import { GraduationCap } from "lucide-react";
 import { db } from "@/db";
 import { alunos, matriculas } from "@/db/schema";

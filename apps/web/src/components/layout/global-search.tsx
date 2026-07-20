@@ -21,6 +21,12 @@ export function GlobalSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  function limparBusca() {
+    setAberto(false);
+    setQuery("");
+    setResultados({ clientes: [], embarcacoes: [], processos: [] });
+  }
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -28,7 +34,7 @@ export function GlobalSearch() {
         setAberto((v) => !v);
       }
       if (e.key === "Escape") {
-        setAberto(false);
+        limparBusca();
       }
     }
     window.addEventListener("keydown", onKeyDown);
@@ -38,15 +44,11 @@ export function GlobalSearch() {
   useEffect(() => {
     if (aberto) {
       setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      setQuery("");
-      setResultados({ clientes: [], embarcacoes: [], processos: [] });
     }
   }, [aberto]);
 
   useEffect(() => {
     if (query.trim().length < 2) {
-      setResultados({ clientes: [], embarcacoes: [], processos: [] });
       return;
     }
     const controller = new AbortController();
@@ -63,7 +65,7 @@ export function GlobalSearch() {
   }, [query]);
 
   function navegar(href: string) {
-    setAberto(false);
+    limparBusca();
     router.push(href);
   }
 
@@ -87,10 +89,10 @@ export function GlobalSearch() {
     resultados.processos.length === 0;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 pt-24"
-      onClick={() => setAberto(false)}
-    >
+      <div
+        className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 pt-24"
+        onClick={limparBusca}
+      >
       <div
         className="w-full max-w-lg rounded-xl border border-outline-variant bg-surface-container-lowest shadow-xl"
         onClick={(e) => e.stopPropagation()}

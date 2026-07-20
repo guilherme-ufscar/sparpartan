@@ -6,7 +6,8 @@ import { LinkButton, Button, Badge, EmptyState } from "@/components/ui";
 import { restaurarCliente } from "../actions";
 
 export default async function LixeiraPage() {
-  const trintaDiasAtras = new Date(Date.now() - 30 * 86400000);
+  const agora = new Date();
+  const trintaDiasAtras = new Date(agora.getTime() - 30 * 86400000);
 
   const lista = await db
     .select()
@@ -36,7 +37,7 @@ export default async function LixeiraPage() {
             {lista.map((c) => {
               const restaurarComId = restaurarCliente.bind(null, c.id);
               const diasRestantes = c.excluidoEm
-                ? 30 - Math.floor((Date.now() - new Date(c.excluidoEm).getTime()) / 86400000)
+                ? 30 - Math.floor((agora.getTime() - new Date(c.excluidoEm).getTime()) / 86400000)
                 : 0;
               return (
                 <li key={c.id} className="flex items-center justify-between px-4 py-3">
