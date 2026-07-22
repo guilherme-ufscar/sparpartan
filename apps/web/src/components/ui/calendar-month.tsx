@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ItemCalendario, CelulaMes } from "@/lib/calendario";
-import { fonteCalendario } from "@/lib/status";
+import { fonteCalendario, paraData } from "@/lib/status";
 import { TONE_SOFT } from "./tone";
 
 const MAX_ITENS_POR_DIA = 3;
@@ -18,7 +18,7 @@ export function CalendarMonth({
 }) {
   const porDia = new Map<string, ItemCalendario[]>();
   for (const item of itens) {
-    const data = item.data instanceof Date ? item.data : new Date(item.data);
+    const data = item.data instanceof Date ? item.data : paraData(item.data);
     const chave = chaveDia(data);
     if (!porDia.has(chave)) porDia.set(chave, []);
     porDia.get(chave)!.push(item);

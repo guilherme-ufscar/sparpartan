@@ -7,6 +7,18 @@ import { agendaEventos, agendaInteressados, clientes } from "@/db/schema";
 import { enviarEmail } from "@/lib/mail/adapter";
 import { Validador, valoresDoFormData, type EstadoForm } from "@/lib/validacao";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function uuidOuNull(valor: FormDataEntryValue | null) {
+  const texto = String(valor ?? "");
+  return UUID_RE.test(texto) ? texto : null;
+}
+
+function dataHoraLocal(valor: string) {
+  const data = new Date(valor);
+  return Number.isNaN(data.getTime()) ? null : data;
+}
+
 export async function criarEvento(
   _estadoAnterior: EstadoForm,
   formData: FormData
@@ -20,15 +32,17 @@ export async function criarEvento(
     .exigir(!!dataHora, "Informe a data e hora.").erro;
   if (erro) return { erro, valores };
 
-  const clienteId = String(formData.get("clienteId") ?? "") || null;
+  const clienteId = uuidOuNull(formData.get("clienteId"));
+  const processoId = uuidOuNull(formData.get("processoId"));
   const tipo = String(formData.get("tipo") ?? "compromisso") as "compromisso" | "prova" | "vencimento";
-  const data = new Date(dataHora);
+  const data = dataHoraLocal(dataHora);
+  if (!data) return { erro: "Data e hora invÃ¡lidas.", valores };
 
   const [evento] = await db
     .insert(agendaEventos)
     .values({
       clienteId,
-      processoId: String(formData.get("processoId") ?? "") || null,
+      processoId,
       titulo,
       dataHora: data,
       tipo,

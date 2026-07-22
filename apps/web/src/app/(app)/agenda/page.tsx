@@ -1,4 +1,4 @@
-import { asc, eq, gte, and, isNotNull } from "drizzle-orm";
+import { asc, eq, gte, and, inArray, isNotNull } from "drizzle-orm";
 import { ChevronLeft, ChevronRight, CalendarClock, Landmark } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/db";
@@ -13,6 +13,17 @@ const NOMES_MES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const MES_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+function uuidValido(valor?: string) {
+  return valor && UUID_RE.test(valor) ? valor : undefined;
+}
+
+function mesValido(valor?: string) {
+  return valor && MES_RE.test(valor) ? valor : undefined;
+}
 
 function montarUrl(mes: string, fontes: FonteCalendarioTipo[], vista?: string) {
   const params = new URLSearchParams();
@@ -29,7 +40,11 @@ export default async function AgendaPage({
 }: {
   searchParams: Promise<{ clienteId?: string; processoId?: string; mes?: string; fontes?: string; vista?: string }>;
 }) {
-  const { clienteId, processoId, mes, fontes, vista } = await searchParams;
+  const params = await searchParams;
+  const clienteId = uuidValido(params.clienteId);
+  const processoId = uuidValido(params.processoId);
+  const mes = mesValido(params.mes);
+  const { fontes, vista } = params;
 
   if (vista === "lista") {
     return <VistaLista clienteId={clienteId} processoId={processoId} />;
@@ -123,7 +138,10 @@ async function ListaLevarMarinha() {
 
   const interessadosPorEvento = new Map<string, { nomeInteressado: string; servicoSolicitado: string | null }[]>();
   if (eventosComLocal.length > 0) {
-    const todosInteressados = await db.select().from(agendaInteressados);
+    const todosInteressados = await db
+      .select()
+      .from(agendaInteressados)
+      .where(inArray(agendaInteressados.eventoId, eventosComLocal.map((ev) => ev.id)));
     for (const it of todosInteressados) {
       const lista = interessadosPorEvento.get(it.eventoId) ?? [];
       lista.push({ nomeInteressado: it.nomeInteressado, servicoSolicitado: it.servicoSolicitado });
